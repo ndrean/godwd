@@ -4,8 +4,8 @@ Itinary.destroy_all
 User.destroy_all
 
 puts "creating..."
-User.create!(email:"toto@test.fr", name:"toto", password: "password", confirm_email: "true")
-User.create!(email:"bibi@test.fr", name:"bibi", password:"password", confirm_email: "true")
+User.create!(email:"toto@test.fr", password: "password", confirm_email: "true")
+User.create!(email:"bibi@test.fr",  password:"password", confirm_email: "true")
 # User.create!(email: "nevendrean@yahoo.fr", password:"password")
 
 Itinary.create!(start: "Tibau do sul", end:"Fortaleza", date: Faker::Date.between(from: Date.today, to: '2020-12-01'), start_gps:[-6.2339824, -35.0487455 ], end_gps:[-3.7304512, -38.5217989] )

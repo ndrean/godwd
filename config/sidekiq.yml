@@ -1,0 +1,11 @@
+:concurrency: 3
+:timeout: 8 # heroku
+:verbose: true
+:max_retries: 1
+:queues: # Queue priority: https://github.com/mperham/sidekiq/wiki/Advanced-Options
+  - default
+  - mailers
+  #- active_storage_analysis
+  #- active_storage_purge
+production:
+  :logfile: ./log/sidekiq.log
