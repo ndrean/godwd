@@ -8,7 +8,7 @@ class User < ApplicationRecord
 
     validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
 
-    # def auth_params
-    #     params.require(:auth).permit( :access_token, :email, :password_digest, :access_token)
-    # end
+    def auth_params
+        params.require(:auth).permit( :access_token, :email, :password_digest, :access_token)
+    end
 end

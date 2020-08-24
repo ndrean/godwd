@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
     # applicable to all controllers
 
     def routing_error(error = 'Routing error', status = :not_found, exception=nil)
-        render_exception(404, "Routing Error", exception)
+        render json: {errors: "Routing error"}, status: 404
     end
     
 end
