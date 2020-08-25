@@ -1,3 +1,3 @@
-api: PORT=3001 && bundle exec rails server
-worker: bundle exec sidekiq
+api: bin/rails server -p 3001 -e development
+worker: bundle exec sidekiq -C ./config/sidekiq.yml
 redis: redis-server --port 6379
