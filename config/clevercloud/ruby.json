@@ -1,5 +1,6 @@
 {
     "deploy": {
-        "rakegoals": ["db:migrate"]
+        "rakegoals": ["db:migrate"],
+        "sidekiq": ["./config/sidekiq_1.yml"]
     }
 }
