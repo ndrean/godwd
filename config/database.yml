@@ -78,4 +78,4 @@ production:
   database: godwd_production
   username: godwd
   password: <%= ENV['GODWD_DATABASE_PASSWORD'] %>
-  #url: <%= ENV['POSTGRESQL_ADDON_URI'] %>
+  url: <%= ENV['POSTGRESQL_ADDON_URI'] %>
