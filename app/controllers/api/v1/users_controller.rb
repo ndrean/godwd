@@ -1,6 +1,13 @@
 class Api::V1::UsersController < ApplicationController
   before_action( :authenticate_user, only: [ :destroy, :profile] )
 
+  def fb_params
+    render json: { 
+      fb_id: Rails.application.credentials.fb[:fb_id],
+      fb_secret: Rails.application.credentials.fb[:fb_secret]
+    }
+  end
+
   # endpoint check user
   def profile
     render json: current_user
@@ -29,13 +36,18 @@ class Api::V1::UsersController < ApplicationController
       fb_user.confirm_token = SecureRandom.urlsafe_base64.to_s
       UserMailer.register(fb_user.email, fb_user.confirm_token).deliver_later
       fb_user.save
-      render json: fb_user, status: 200
+      return render json: fb_user, status: 200
     end
 
     if fb_user.confirm_email
       fb_user.access_token = Knock::AuthToken.new(payload: {sub: fb_user.id}).token
       fb_user.save
-      return render json: fb_user, status: 200
+      return render json: fb_user, status: 202
+    end
+
+    if !fb_user.confirm_email && fb_user.confirm_token  
+      logger.debug "............Wait for email confirmation"
+      return render json: {status: 201}
     end
   end
 
@@ -43,7 +55,7 @@ class Api::V1::UsersController < ApplicationController
   def create_user
     return render json: { status: :not_acceptable }  if !user_params[:password]
     user = User.find_by(email: user_params[:email])
-    logger.debug "..........•{user}"
+    logger.debug "..........#{user}"
     user.password = user_params[:password] if user
     user = User.create(user_params) if !user
     # if the user has no 'confirm_token', set one and send a mail with it for him to click

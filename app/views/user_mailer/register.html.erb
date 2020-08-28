@@ -1,18 +1,20 @@
 Hi <%= @user_email %>
 
-<p> Thanks for registering to goDownWind.online ! Please click the link below to confirm registration </p>
+<p> Thanks for registering to goDownWind.online ! </p>
+
+<p> Please click the link below to confirm registration: </p>
 <p>
     <a href="<%=ENV['DOMAIN_HOST']%>/api/v1/mailconfirmation/?mail_token=<%=@user_confirmation_token%>">
         Confirm my account
     </a>
 </p>
 <p>
-Once registered, you can create an event and invite other users.</p>
+Please note: once registered, you can create an event and invite other users.</p>
 <p>
 To create an event, you need to put a date, a starting point and an end point.
 </p>
 <p>
-You can invit  and select several participants, and even send a picture
+You can invite  and select several participants, and even send a picture
 to help people to localize a place.
 </p>
 <p>
@@ -20,4 +22,3 @@ When you save the event, the members will receive an invitation by email.
 </p>
 
 <p>Cheers</p>
-<a href="https://www.godownwind.online">go downwind!</a>

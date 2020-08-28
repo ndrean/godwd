@@ -1,12 +1,19 @@
 <p>Hi <%= @owner %></p>
 
-<p>I am interested to joint the event you organise:</p>
+<p>I am interested to join the following event you organise:</p>
 <p>Date: <%= @itinary.date%></p>
 <p>From: <%= @itinary.start%></p>
 <p>To: <%= @itinary.end%></p>
 
-<p>You can email me at: <%= mail_to @user%> or click on this = > 
-    <a href=<%="#{ENV['DOMAIN_HOST']}/api/v1/confirmDemand?name=#{@owner}&ptoken=#{@token}&user=#{@user}&itinary=#{@itinary.id}"%>>link</a> < = 
+<p>You can email me at: <%= mail_to @user%></p>
+
+<p> or click on this link: = > 
+
+<a href=<%="#{ENV['DOMAIN_HOST']}/api/v1/confirmDemand?#{@params.to_query}" %>>link</a> < = 
 which notifies me that you accepted my demand.</p>
 
 <p>Cheers</p>
+
+<!-- old version of passing params as query string in the url, before '.to_query'
+<a href=<%="#{ENV['DOMAIN_HOST']}/api/v1/confirmDemand?name=#{@owner}&ptoken=#{@token}&user=#{@user}&itinary=#{@itinary.id}"%>>
+-->

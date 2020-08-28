@@ -5,7 +5,7 @@
         
         #knock
         post '/getUserToken',     to: 'user_token#create'
-
+        get '/fbParams',          to: 'users#fb_params'
         resources :users, only: [:index, :show]
         get '/profile',           to: 'users#profile'
         post '/findUser',         to: 'users#find_user'

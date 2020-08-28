@@ -1,10 +1,39 @@
-You can invit  and select several participants, and even send a picture
-to help people to localize a place.
-</p>
+<h1>Event invitation</h1>
+
+<p> Hi <%= @p_email %> </p>
 <p>
-When you save the event, the members will receive an invitation by email.
+  You are invited to join a downwind event the  <%= @event.itinary.date %>:</p>
+  <ul>
+    <li>from: <%= @event.itinary.start %></li>
+    <li>to: <%= @event.itinary.end %></li>
+  </ul>   
+  <br>
+  The participants are:
+<ul>
+  <% if @event.participants %>
+    <% @event.participants.each do |participant| %>
+      <li><%= participant['email'] %></li>
+    <% end %>
+  <% end %>
+</ul>
+
+<p>You can download the app <a href=<%= ENV['DOMAIN_NAME'] %>> go downwind</a> 
 </p>
+<p>With the app, you can:</p>
+<ul>
+  <li>CREATE an event: you just need to put a date, a starting point and an end point.
+You can do this on the map so the event will be seen and localized.
+  </li>
+  <li>INVITE buddies: you can select several members. 
+When you save the event and select buddies, they will receive an invitation by email.
+  </li>
+  <li>PICTURE: you can add a picture to help people to localize a place.
+  </li>
+  <li>DEMAND: You can demand to particpate to an event: the owner will receive a mail and 
+can confirm by a link</li>
+</ul>
+
+
 <br/>
 <p>Enjoy your ride!</p>
 <p>Cheers</p>
-<a href=<%= ENV['DOMAIN_NAME'] %>> go downwind!</a>

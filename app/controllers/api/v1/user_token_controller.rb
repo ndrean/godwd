@@ -5,4 +5,5 @@ class Api::V1::UserTokenController < Knock::AuthTokenController
     def auth_params
       params.require(:auth).permit( :access_token, :email,  :password)
     end
+
 end
