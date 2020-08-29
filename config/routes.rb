@@ -1,11 +1,15 @@
   Rails.application.routes.draw do
-  #post 'user_token' => 'user_token#create'
+  
     namespace :api do
       namespace :v1 do
         
         #knock
         post '/getUserToken',     to: 'user_token#create'
+
+        #credentials passed to front end
         get '/fbParams',          to: 'users#fb_params'
+        get '/CLParams',          to: 'users#cl_params'
+
         resources :users, only: [:index, :show]
         get '/profile',           to: 'users#profile'
         post '/findUser',         to: 'users#find_user'

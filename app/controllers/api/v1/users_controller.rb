@@ -2,20 +2,30 @@ class Api::V1::UsersController < ApplicationController
   before_action( :authenticate_user, only: [ :destroy, :profile] )
 
   def fb_params
-    render json: { 
-      fb_id: Rails.application.credentials.fb[:fb_id],
-      fb_secret: Rails.application.credentials.fb[:fb_secret]
+    expires_in 24.hours, public: true
+    render json: {
+      "fb_id": Rails.application.credentials.fb[:fb_id],
+      "fb_secret": Rails.application.credentials.fb[:fb_secret]
+    }
+  end
+
+  def cl_params
+    expires_in 24.hours, public: true
+    render json:{
+      "CL_API_Secret": Rails.application.credentials.CL[:API_SECRET],
+      "CL_API_KEY": Rails.application.credentials.CL[:API_KEY]
     }
   end
 
   # endpoint check user
   def profile
+    # expires_in 4.hours
     render json: current_user
   end
 
   def find_user
     user = User.find_by(email: params[:user][:email])
-    if user
+    if user && stale?(user)
       render json: user
     else
       render json: errors
@@ -81,11 +91,16 @@ class Api::V1::UsersController < ApplicationController
       user.confirm_email = true
       return user.save
     end
+
     render json: { status: 401 }
   end
 
+
   def index
-    render json: User.all.to_json
+    users = User.all.to_json
+     if stale?(users)
+      render json: users
+     end
   end
 
   # GET 'api/v1//users/:id'
