@@ -11,6 +11,7 @@
   <https://devcenter.heroku.com/articles/http-caching-ruby-rails#conditional-cache-headers>
 
 -`if stale?` : no pb with browser cache here with the API: renders 'Completed 304 Not Modified in 33ms' or querries again when necessary.
+Raed <https://thoughtbot.com/blog/take-control-of-your-http-caching-in-rails>
 
 <https://www.synbioz.com/blog/tech/du-cache-http-avec-les-etag-en-rails>
 <https://blog.bigbinary.com/2016/03/08/rails-5-switches-from-strong-etags-to-weak-tags.html?utm_source=rubyweekly&utm_medium=email>
