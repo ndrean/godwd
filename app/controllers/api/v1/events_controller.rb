@@ -62,7 +62,7 @@ class Api::V1::EventsController < ApplicationController
       end
       event.save
     end
-    return render json:  event.to_json, status: 201
+    return render json:  event.to_json(include: [ :itinary, user:{only: :email}])
   end
 
   #  PATCH 'api/v1/events/:id'
