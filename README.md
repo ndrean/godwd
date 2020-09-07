@@ -1,6 +1,6 @@
 # README
 
-![Database schema](https://github.com/ndrean/godwd/blob/master/app/public/goDownWind.png)
+![Database schema](https://github.com/ndrean/godwd/blob/master/public/goDownWind.png)
 
 ```
 CREATE TABLE "events" (
