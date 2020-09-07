@@ -17,9 +17,11 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  host: localhost
 
 development:
   <<: *default
@@ -76,6 +78,6 @@ test:
 production:
   <<: *default
   database: godwd_production
-  username: godwd
-  password: <%= ENV['GODWD_DATABASE_PASSWORD'] %>
+
+  # Heroku
   url: <%= ENV['POSTGRESQL_ADDON_URI'] %>

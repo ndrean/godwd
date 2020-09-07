@@ -3,15 +3,18 @@ FROM ruby:2.6.6-alpine
 # install the required packages inside Docker: PostgreSQL (libpq-dev, postgres-client)
 RUN apk update && apk add bash build-base nodejs  postgresql-dev tzdata
 #if needed, add yarn
-RUN gem install bundler --no-document
+RUN gem install rails bundler --no-document
 # create folder called 'project' to host the codebase
-RUN mkdir /project
+ENV RAILS_ROOT /project
+RUN mkdir -p $RAILS_ROOT
 # set the wroking directory to 'project' folder
-WORKDIR /project
+WORKDIR $RAILS_ROOT
 # copy from current directory '.' to the working directory './'
 COPY Gemfile Gemfile.lock . ./
 
-ENV RAILS_ENV development
+
+ENV RAILS_ENV='production'
+ENV RACK_ENV='production'
 
 # install the bundler gem. Should match the version in 'Gemfile.lock'
 RUN bundle install --no-binstubs || bundle check
@@ -27,7 +30,6 @@ RUN bundle install --no-binstubs || bundle check
 
 # copy the codebase into Docker
 COPY . ./
-
 
 EXPOSE 3001
 # set the start command

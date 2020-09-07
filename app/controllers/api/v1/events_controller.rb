@@ -45,6 +45,7 @@ class Api::V1::EventsController < ApplicationController
         itinary_attributes: [:date, :start, :end, :distance, start_gps: [], end_gps: []],
         participants: [:email, :notif, :id, :ptoken],
       ) 
+    # !! permitting an array must be at the end !!
     
     event = Event.new(event_params)
     event.user = current_user
@@ -62,7 +63,8 @@ class Api::V1::EventsController < ApplicationController
       end
       event.save
     end
-    return render json:  event.to_json(include: [ :itinary, user:{only: :email}])
+    # !! had to remove all the fields from ':itinary', and put 'only at the end!!
+    return render json:  event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
   end
 
   #  PATCH 'api/v1/events/:id'
@@ -101,7 +103,7 @@ class Api::V1::EventsController < ApplicationController
         end
         event.save
       end
-      return render json: event.to_json, status: 201
+      return render json: event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
     else
       return render json: {errors: event.errors.full_messages},
         status: :unprocessable_entity
