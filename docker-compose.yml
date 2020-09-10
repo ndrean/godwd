@@ -1,6 +1,10 @@
 version: "3.4"
 # to build multi-container app
 # here: Postgres, Sidekiq, Redis, Rails
+volumes:
+  redis:
+  postgres:
+  project:
 
 services:
   db:
@@ -50,8 +54,3 @@ services:
       - REDIS_URL_SIDEKIQ=redis://redis:6379/1
     env_file:
       - ".env"
-
-volumes:
-  redis:
-  postgres:
-  project:

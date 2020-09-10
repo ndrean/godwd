@@ -76,3 +76,31 @@ Other HTTP caching iwth Rails (non API):
 # VPS for Rails
 
 <https://mydigital-life.online/comment-installer-rails-sur-un-vps/>
+
+# Procfile
+
+> Dev localhost mode:
+
+```
+api: bundle exec bin/rails server -p 3001
+worker: bundle exec sidekiq -C ./config/sidekiq.yml
+redis: redis-server --port 6379
+
+```
+
+> Heroku mode:
+
+```
+api: bundle exec bin/rails server -p 3001
+worker: bundle exec sidekiq -C ./config/sidekiq.yml
+redis: redis-server --port 6379
+```
+
+# Compression
+
+<https://pawelurbanek.com/rails-gzip-brotli-compression>
+
+```
+#/config.application.rb
+  config.middleware.use Rack::Deflater
+```
