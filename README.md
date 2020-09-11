@@ -77,6 +77,10 @@ Other HTTP caching iwth Rails (non API):
 
 <https://mydigital-life.online/comment-installer-rails-sur-un-vps/>
 
+# Sidekiq setup
+
+Added `/config/sidekiq.rb` with `Redis`.
+
 # Procfile
 
 > Dev localhost mode:
