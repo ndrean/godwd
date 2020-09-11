@@ -75,6 +75,6 @@ production:
   <<: *default
   database: godwd_production
   # Heroku
-  #url: <%= ENV['DATABASE_URL'] %>
+  url: <%= ENV['DATABASE_URL'] %>
   # CleverCloud
-  url: <%= ENV['POSTGRESQL_ADDON_URI'] %>
+  # url: <%= ENV['POSTGRESQL_ADDON_URI'] %>

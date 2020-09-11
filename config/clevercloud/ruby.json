@@ -1,6 +1,7 @@
 {
     "deploy": {
-        "rakegoals": ["db:migrate"],
+        "env": "production",
+        "rakegoals": ["db:migrate", "db:seed"],
         "sidekiq": true
     }
 }
