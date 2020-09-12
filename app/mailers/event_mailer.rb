@@ -1,5 +1,6 @@
 class EventMailer < ApplicationMailer
-
+  default from: ENV['SMTP_USER_NAME']
+  
   def invitation(p_email, event_ID)
     @p_email = p_email
     @event = Event.find(event_ID)

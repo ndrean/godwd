@@ -3,10 +3,10 @@ Hi <%= @user_email %>
 <p> Thanks for registering to goDownWind.online ! </p>
 
 <p> Please click the link below to confirm registration: </p>
-<p>
-    <a href="<%=ENV['DOMAIN_NAME']%>/api/v1/mailconfirmation/?mail_token=<%=@user_confirmation_token%>">
+<p> **** 
+    <a href="<%=ENV['DOMAIN_NAME']%>/mailconfirmation/?mail_token=<%=@user_confirmation_token%>">
         Confirm my account
-    </a>
+    </a> ****
 </p>
 <p>
 Please note: once registered, you can create an event and invite other users.</p>
