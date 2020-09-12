@@ -3,8 +3,8 @@ Rails.application.configure do
   config.active_job.queue_adapter     = :sidekiq
 
   config.action_mailer.delivery_method = :smtp # letter_opener
-  config.action_mailer.default_url_options = { host: 'https://godwd-api.herokuapp.com/'}
-  routes.default_url_options[:host] = 'http://localhost:3001'
+  config.action_mailer.default_url_options = { host: ENV['DOMAIN_NAME'] }
+  #routes.default_url_options[:host] = 'localhost:3001'
   # Code is not reloaded between requests.
   config.cache_classes = true
 

@@ -80,6 +80,7 @@ Other HTTP caching iwth Rails (non API):
 # Sidekiq setup
 
 Added `/config/sidekiq.rb` with `Redis`.
+<https://enmanuelmedina.com/en/posts/rails-sidekiq-heroku>
 
 # Procfile
 

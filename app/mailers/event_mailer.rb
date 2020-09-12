@@ -14,7 +14,7 @@ class EventMailer < ApplicationMailer
     @token = token
     @itinary = Itinary.find(itinary_id)
 
-    # we will attach #{@paarams.to_query} as a query string to the url
+    # we will attach #{@params.to_query} as a query string to the url
     # it contains a token already saved in the db to find the event
     @params= {name:owner_email, ptoken:token, user:u_email, itinary:itinary_id}
     mail(to: @owner, subject: "Demand to join")

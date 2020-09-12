@@ -4,7 +4,7 @@ Hi <%= @user_email %>
 
 <p> Please click the link below to confirm registration: </p>
 <p>
-    <a href="<%=ENV['DOMAIN_HOST']%>/api/v1/mailconfirmation/?mail_token=<%=@user_confirmation_token%>">
+    <a href="<%=ENV['DOMAIN_NAME']%>/api/v1/mailconfirmation/?mail_token=<%=@user_confirmation_token%>">
         Confirm my account
     </a>
 </p>

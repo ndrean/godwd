@@ -41,9 +41,17 @@ preload_app!
 # Heroku
 rackup DefaultRackup
 
+before_fork do 
+    @sidekiq_pid ||= spawn('bundle exec sidekiq -t 25')
+end
+
 on_worker_boot do
     ActiveRecord::Base.establish_connection
 end
 
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
+
+on_restart do
+    Sidekiq.redis.shutdown { |conn| conn.close }
+end
