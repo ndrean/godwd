@@ -1,4 +1,4 @@
-class RemoveDirectLink < ApplicationJob
+class RemoveDirectLink
   include Sidekiq::Worker
   queue_as :default
 
