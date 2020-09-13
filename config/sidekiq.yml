@@ -5,7 +5,5 @@
 :queues: # Queue priority: https://github.com/mperham/sidekiq/wiki/Advanced-Options
   - default
   - mailers
-  #- active_storage_analysis
-  #- active_storage_purge
 production:
   :logfile: ./log/sidekiq.log

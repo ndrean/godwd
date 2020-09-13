@@ -58,8 +58,11 @@ ALTER TABLE "users" ADD CONSTRAINT "fk_rails_events_users" FOREIGN KEY ("id") RE
 # HTTP Caching w/Rails
 
 `api:rails: ConditionalGet`
-This is a Rails API, so only `if stale` is possible. -`if stale?` renders 'Completed 304 Not Modified in 33ms' or querries again when necessary.
-Raed <https://thoughtbot.com/blog/take-control-of-your-http-caching-in-rails>
+This is a Rails API so only `if stale` is possible. -`if stale?` renders 'Completed 304 Not Modified in 33ms' or querries again when necessary.
+
+Read:
+
+<https://thoughtbot.com/blog/take-control-of-your-http-caching-in-rails>
 
 <https://www.synbioz.com/blog/tech/du-cache-http-avec-les-etag-en-rails>
 <https://blog.bigbinary.com/2016/03/08/rails-5-switches-from-strong-etags-to-weak-tags.html?utm_source=rubyweekly&utm_medium=email>
@@ -77,10 +80,59 @@ Other HTTP caching iwth Rails (non API):
 
 <https://mydigital-life.online/comment-installer-rails-sur-un-vps/>
 
-# Sidekiq setup
+# Async jobs:
+
+With `ActiveJob` and/or directly `Sidekiq`:
+
+## Sidekiq setup
 
 Added `/config/sidekiq.rb` with `Redis`.
 <https://enmanuelmedina.com/en/posts/rails-sidekiq-heroku>
+
+## Mail
+
+We define a class (`EventMailer` and `UserMailer`, both inheriting from `ApplicationMailer`) with actions that will be used by the controller. Each method uses a `html.erb` view to be delivered via the mail protocole `smtp`. The views use the instance variables defined in the actions.
+
+The mails are queued in a Redis db, and Sidekiq is used as the async framework.
+
+The usage of Redis is declared in the '/app/config/initializers/sidekiq.rb' and the gem 'redis'.
+For Heroku, we need to set the config vars REDIS_PROVIDER and REDIS_URL.
+
+## Cloudinary remove with Sidekiq
+
+<https://cloudinary.com/documentation/rails_integration#rails_getting_started_guide>
+
+Addded `/config/cloudinary.yml` with `.env`. For Heroku, add 'config.vars'.
+
+We use `RemoveDirectLink`to async remove a picture from Cloudinary by the Rails backend. We can use activeJob or directly a worker.
+
+Here, we used a worker (without using ActiveJob, just include `Sidekiq::Worker` without `default queue`):
+
+```
+ # /App/workers/remove_direct_link.rb
+class RemoveDirectLink
+  include Sidekiq::Worker
+
+  def perform(event_publicID)
+    return if !event_publicID
+    Cloudinary::Uploader.destroy(event_publicID)
+  end
+end
+```
+
+We could also use ActiveJob (cf mails) by defining a class inheriting from `ApplicationJob` and specifying the 'queue':
+
+```
+# /app/jobs/remove_direct_link.rb
+class RemoveDirectLink < ApplicationJob
+  queue_as :default
+
+  def perform(event_publicID)
+    return if !event_publicID
+    Cloudinary::Uploader.destroy(event_publicID)
+  end
+end
+```
 
 # Procfile
 
