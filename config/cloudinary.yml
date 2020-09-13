@@ -5,7 +5,7 @@ development:
   enhance_image_tag: true
   static_file_support: false
 production:
-  cloud_name: Rails.appication.credentials.CL[:COULD_NAME]
+  cloud_name: Rails.appication.credentials.CL[:CLOUD_NAME]
   api_key: Rails.application.credentials.CL[:API_KEY]
   api_secret: Rails.application.credentials.CL[:API_SECRET]
   enhance_image_tag: true
