@@ -1,6 +1,6 @@
 class RemoveDirectLink
   include Sidekiq::Worker
-  queue_as :default
+  #queue_as :default
 
     def perform(event_publicID)
       return if !event_publicID
