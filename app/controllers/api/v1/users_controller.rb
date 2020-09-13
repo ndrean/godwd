@@ -12,11 +12,12 @@ class Api::V1::UsersController < ApplicationController
   def cl_params
     expires_in 24.hours, public: true
     render json:{
-      "CLOUD_NAME": Rails.application.crendetials.CL[:CLOUD_NAME]
-      #"CL_API_Secret": Rails.application.credentials.CL[:API_SECRET],
-      #"CL_API_KEY": Rails.application.credentials.CL[:API_KEY]
+      "CLOUD_NAME": Rails.application.credentials.CL[:CLOUD_NAME]
+      
     }
   end
+  #"CL_API_Secret": Rails.application.credentials.CL[:API_SECRET],
+  #"CL_API_KEY": Rails.application.credentials.CL[:API_KEY]
 
   # endpoint check user
   def profile
