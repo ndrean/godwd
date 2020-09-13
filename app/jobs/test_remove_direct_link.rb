@@ -1,9 +1,8 @@
-class RemoveDirectLink < ApplicationJob
-  include Sidekiq::Worker
-  queue_as :default
+# class RemoveDirectLink < ApplicationJob
+#   queue_as :default
 
-    def perform(event_publicID)
-      return if !event_publicID
-      Cloudinary::Uploader.destroy(event_publicID)
-    end
-end
+#     def perform(event_publicID)
+#       return if !event_publicID
+#       Cloudinary::Uploader.destroy(event_publicID)
+#     end
+# end
