@@ -30,12 +30,15 @@ class Api::V1::EventsController < ApplicationController
     )
   end
 
+  # Note for create and update for arrays with PSQL
+  # to accept an array, we need to separate between the ','
+    # if params[:event][:itinary_attributes][:start_gps]
+    # params[:event][:itinary_attributes][:start_gps] = params[:event][:itinary_attributes][:start_gps][0].split(',')
+    # params[:event][:itinary_attributes][:end_gps] = params[:event][:itinary_attributes][:end_gps][0].split(',')
+    # end
+
   # POST '/api/v1/events'
   def create   
-    # if params[:event][:itinary_attributes][:start_gps]
-    #   params[:event][:itinary_attributes][:start_gps] = params[:event][:itinary_attributes][:start_gps][0].split(',')
-    #   params[:event][:itinary_attributes][:end_gps] = params[:event][:itinary_attributes][:end_gps][0].split(',')
-    # end
     #params.permit!
     event_params = params.require(:event).permit( 
         :user,
@@ -74,14 +77,8 @@ class Api::V1::EventsController < ApplicationController
     
     # if we update direct link, then first remove from CL if one exists
     if event_params[:directCLurl] && event.directCLurl
-      RemoveDirectLink.perform_later(event.publicID) 
+      RemoveDirectLink.perform_async(event.publicID) 
     end
-
-    # to accept an array, we need to separate between the ','
-    # if params[:event][:itinary_attributes][:start_gps]
-    # params[:event][:itinary_attributes][:start_gps] = params[:event][:itinary_attributes][:start_gps][0].split(',')
-    # params[:event][:itinary_attributes][:end_gps] = params[:event][:itinary_attributes][:end_gps][0].split(',')
-    # end
     
     #params.permit!
     event_params = params.require(:event).permit( 

@@ -106,7 +106,7 @@ Addded `/config/cloudinary.yml` with `.env`. For Heroku, add 'config.vars'.
 
 We use `RemoveDirectLink`to async remove a picture from Cloudinary by the Rails backend. We can use activeJob or directly a worker.
 
-Here, we used a worker (without using ActiveJob, just include `Sidekiq::Worker` without `default queue`):
+Here, we used a worker (without using ActiveJob, just include `Sidekiq::Worker` without `default queue`) and use `perform_async`.
 
 ```
  # /App/workers/remove_direct_link.rb
@@ -120,7 +120,7 @@ class RemoveDirectLink
 end
 ```
 
-We could also use ActiveJob (cf mails) by defining a class inheriting from `ApplicationJob` and specifying the 'queue':
+We could also use ActiveJob (cf mails) by defining a class inheriting from `ApplicationJob` and specifying the 'queue' and use `deliver_later`.
 
 ```
 # /app/jobs/remove_direct_link.rb
