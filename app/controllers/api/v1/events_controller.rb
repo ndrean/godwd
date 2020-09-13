@@ -115,7 +115,7 @@ class Api::V1::EventsController < ApplicationController
     event = Event.find(params[:id])   
     return render json: { status: 401 } if event.user != current_user
     #async Active_Job  for Cloudinary
-    RemoveDirectLink.perform_later(event.publicID) if event.publicID
+    RemoveDirectLink.perform_async(event.publicID) if event.publicID
     event.itinary.destroy
     event.destroy
     return render json: {status: 200}

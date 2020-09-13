@@ -1,4 +1,5 @@
 class RemoveDirectLink < ApplicationJob
+  include Sidekiq::Worker
   queue_as :default
 
     def perform(event_publicID)
