@@ -120,7 +120,8 @@ class RemoveDirectLink
 end
 ```
 
-We could also use ActiveJob (cf mails) by defining a class inheriting from `ApplicationJob` and specifying the 'queue' and use `deliver_later`.
+We could also use ActiveJob (cf mails) by defining a class inheriting from `ApplicationJob` and specifying the 'queue' and use `deliver_later`. Here, we use the Cloudinary method `destroy':
+<https://cloudinary.com/documentation/image_upload_api_reference#destroy_method>
 
 ```
 # /app/jobs/remove_direct_link.rb

@@ -1,11 +1,11 @@
 development:
-  cloud_name: ENV['CL_CLOUD_NAME']
+  cloud_name: dd4eq9e3c
   api_key: ENV['CL_API_KEY']
   api_secret: ENV['CL_API_SECRET']
   enhance_image_tag: true
   static_file_support: false
 production:
-  cloud_name: ENV['CL_CLOUD_NAME']
+  cloud_name: dd4eq9e3c
   api_key: ENV['CL_API_KEY']
   api_secret: ENV['CL_API_SECRET']
   enhance_image_tag: true
