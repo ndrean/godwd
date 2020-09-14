@@ -102,7 +102,9 @@ For Heroku, we need to set the config vars REDIS_PROVIDER and REDIS_URL.
 
 <https://cloudinary.com/documentation/rails_integration#rails_getting_started_guide>
 
-Addded `/config/cloudinary.yml` with `.env`. For Heroku, add 'config.vars'.
+<https://github.com/cloudinary/cloudinary_gem>
+
+> credentials: they are passed manually to each call in the method, and added as `config vars` to Heroku. The `/config/cloudinary.yml` is not used since it doesn't accept `.env` variables.
 
 We use `RemoveDirectLink`to async remove a picture from Cloudinary by the Rails backend. We can use activeJob or directly a worker.
 
@@ -129,8 +131,14 @@ class RemoveDirectLink < ApplicationJob
   queue_as :default
 
   def perform(event_publicID)
+    auth = {
+        cloud_name: ENV['CL_CLOUD_NAME'],
+        api_key: ENV['CL_API_KEY'],
+        api_secret: ENV['CL_API_SECRET']
+      }
+
     return if !event_publicID
-    Cloudinary::Uploader.destroy(event_publicID)
+    Cloudinary::Uploader.destroy(event_publicID, auth)
   end
 end
 ```
