@@ -4,11 +4,11 @@ class RemoveDirectLink
 
     def perform(event_publicID)
       auth = {
-        cloud_name: ENV['CL_CLOUD_NAME'],
-        api_key: ENV['CL_API_KEY'],
-        api_secret: ENV['CL_API_SECRET']
+        cloud_name: Rails.application.credentials.CL[:CLOUD_NAME],
+        api_key: Rails.application.credentials.CL[:API_KEY],
+        api_secret: Rails.application.credentials.CL[:API_SECRET]
       }
-      
+
       return if !event_publicID
       Cloudinary::Uploader.destroy(event_publicID, auth)
     end
