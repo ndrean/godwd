@@ -82,12 +82,21 @@ Other HTTP caching iwth Rails (non API):
 
 # Async jobs:
 
-With `ActiveJob` and/or directly `Sidekiq`:
+- `ActiveJob`. Set `config.active_job.queue_adapter = :sidekiq` in `/config/environments/dev-prod.rb`, and use `perform_later` or `deliver_later`. We alos need to declare a class inheriting from `ApplicationJob`and defined `queure_as :mailer` for example. <https://github.com/mperham/sidekiq/wiki/Active+Job>
+
+- or directly `Sidekiq`: example with RemoveDirectLink. Create a worker under `/app/workers/my_worker.rb` with `include Sidekiq::Worker` and use `perform_async` in the controller).
 
 ## Sidekiq setup
 
 Added `/config/sidekiq.rb` with `Redis`.
+<https://github.com/mperham/sidekiq/wiki>
 <https://enmanuelmedina.com/en/posts/rails-sidekiq-heroku>
+
+The sidekiq console is available at http://localhost:3001/sidekiq since a route is defined:
+
+```ruby
+mount Sidekiq::Web => '/sidekiq'
+```
 
 ## Mail
 
@@ -122,7 +131,8 @@ class RemoveDirectLink
 end
 ```
 
-We could also use ActiveJob (cf mails) by defining a class inheriting from `ApplicationJob` and specifying the 'queue' and use `deliver_later`. Here, we use the Cloudinary method `destroy':
+We could also use ActiveJob (cf mails) by defining a class inheriting from `ApplicationJob` and specifying the 'queue' and use `deliver_later`. Here, we use the Cloudinary method `destroy`:
+
 <https://cloudinary.com/documentation/image_upload_api_reference#destroy_method>
 
 ```
@@ -139,6 +149,29 @@ class RemoveDirectLink < ApplicationJob
 
     return if !event_publicID
     Cloudinary::Uploader.destroy(event_publicID, auth)
+  end
+end
+```
+
+# Puma port setup
+
+React will run on 'localhost:3000" whilst Rails will run on 'localhost:3001'
+
+```ruby
+# /config/puma.rb
+port        ENV.fetch("PORT") { 3001 }
+```
+
+CORS
+
+CORS stands for Cross-Origin Resource Sharing, a standard that lets developers specify who can access the assets on a server and what HTTP requests are accepted. For example, a restrictive 'same-origin' policy would prevent your Rails API at localhost:3001 from sending and receiving data to your front-end at localhost:3000.
+
+```ruby
+# /config/application.rb
+config.middleware.insert_before 0, Rack::Cors do
+  allow do
+    origins ‘localhost:3000', 'godownwind.online'
+    resource ‘*’, headers: :any, methods: [:get, :post, :options]
   end
 end
 ```
@@ -169,4 +202,17 @@ redis: redis-server --port 6379
 ```
 #/config.application.rb
   config.middleware.use Rack::Deflater
+```
+
+# Arrays in PostgreSQL
+
+<https://stackoverflow.com/questions/63404637/rails-submitting-array-to-postgres>
+
+To accept an array, we need to separate between the ','.
+
+```
+if params[:event][:itinary_attributes][:start_gps]
+  params[:event][:itinary_attributes][:start_gps] = params[:event][:itinary_attributes][:start_gps][0].split(',')
+  params[:event][:itinary_attributes][:end_gps] = params[:event][:itinary_attributes][:end_gps][0].split(',')
+end
 ```

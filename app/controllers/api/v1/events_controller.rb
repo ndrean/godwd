@@ -67,7 +67,17 @@ class Api::V1::EventsController < ApplicationController
       event.save
     end
     # !! had to remove all the fields from ':itinary', and put 'only at the end!!
-    return render json:  event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
+    #return render json:  event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
+    events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
+      .to_json( include: [ 
+          user: {only: [:email]},
+          itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
+          ]
+      )
+    if stale?(events)
+      render json: events, status: 201
+    end
+    
   end
 
   #  PATCH 'api/v1/events/:id'
@@ -77,7 +87,7 @@ class Api::V1::EventsController < ApplicationController
     
     # if we update direct link, then first remove from CL if one exists
     if event_params[:directCLurl] && event.directCLurl
-      RemoveDirectLink.perform_async(event.publicID) 
+      RemoveDirectLink.perform_async(event.publicID) # with Sidekiq, not ActiveJob
     end
     
     #params.permit!
@@ -96,11 +106,20 @@ class Api::V1::EventsController < ApplicationController
           # 'jsonb' format => participant['email'], not :email
           participant['notif'] = true
           EventMailer.invitation(participant['email'], event.id)
-          .deliver_later
+          .deliver_later # with ActiveJob
         end
         event.save
       end
-      return render json: event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
+      events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
+      .to_json( include: [ 
+          user: {only: [:email]},
+          itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
+          ]
+      )
+      if stale?(events)
+        render json: events, status: 200
+      end
+      # return render json: event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
     else
       return render json: {errors: event.errors.full_messages},
         status: :unprocessable_entity
@@ -111,7 +130,7 @@ class Api::V1::EventsController < ApplicationController
   def destroy
     event = Event.find(params[:id])   
     return render json: { status: 401 } if event.user != current_user
-    #async Active_Job  for Cloudinary
+    # Sidekiq (not ActiveJob) for Cloudinary
     RemoveDirectLink.perform_async(event.publicID) if event.publicID
     event.itinary.destroy
     event.destroy
