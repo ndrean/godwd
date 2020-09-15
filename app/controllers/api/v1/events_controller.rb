@@ -67,16 +67,20 @@ class Api::V1::EventsController < ApplicationController
       event.save
     end
     # !! had to remove all the fields from ':itinary', and put 'only at the end!!
-    #return render json:  event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
+    
+    ## debut TEST
+    upcoming_itinaries = Itinary.where('date >?', Date.today-1)
     events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
       .to_json( include: [ 
           user: {only: [:email]},
           itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
           ]
       )
-    if stale?(events)
-      render json: events, status: 201
-    end
+    render json: events, status: 201
+    ## fin test
+
+    # OLD: return render json:  event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
+
     
   end
 
@@ -110,16 +114,18 @@ class Api::V1::EventsController < ApplicationController
         end
         event.save
       end
+      ## debut test
+      upcoming_itinaries = Itinary.where('date >?', Date.today-1)
       events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
       .to_json( include: [ 
           user: {only: [:email]},
           itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
           ]
       )
-      if stale?(events)
-        render json: events, status: 200
-      end
-      # return render json: event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
+      render json: events, status: 200
+      ## fin test
+
+      # OLD: return render json: event.to_json(include: [ :itinary, user:{only: :email}]), status: 201
     else
       return render json: {errors: event.errors.full_messages},
         status: :unprocessable_entity
@@ -134,7 +140,17 @@ class Api::V1::EventsController < ApplicationController
     RemoveDirectLink.perform_async(event.publicID) if event.publicID
     event.itinary.destroy
     event.destroy
-    return render json: {status: 200}
+
+    upcoming_itinaries = Itinary.where('date >?', Date.today-1)
+    events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
+    .to_json( include: [ 
+        user: {only: [:email]},
+        itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
+        ]
+    )
+    render json: events, status: 200
+      
+    # OLD: return render json: {status: 200}
   end
 
   
