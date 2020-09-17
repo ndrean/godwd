@@ -2,7 +2,7 @@ class Api::V1::UsersController < ApplicationController
   before_action( :authenticate_user, only: [ :destroy, :profile] )
 
   def fb_params
-    expires_in 24.hours, public: true
+    # expires_in 12.hours, public: true
     render json: {
       "fb_id": Rails.application.credentials.fb[:fb_id],
       "fb_secret": Rails.application.credentials.fb[:fb_secret]
