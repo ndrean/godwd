@@ -67,7 +67,7 @@ class Api::V1::UsersController < ApplicationController
   def create_user
     return render json: { status: :not_acceptable }  if !user_params[:password]
     user = User.find_by(email: user_params[:email])
-    logger.debug "..........#{user}"
+    #logger.debug "..........#{user}"
     user.password = user_params[:password] if user
     user = User.create(user_params) if !user
     # if the user has no 'confirm_token', set one and send a mail with it for him to click
