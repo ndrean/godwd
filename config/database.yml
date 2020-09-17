@@ -71,19 +71,19 @@ test:
   # You can use this database configuration with:
 
 # for Heroku & CleverCloud
-# production:
-#   <<: *default
-#   database: godwd_production
-#   # Heroku
-#   url: <%= ENV['DATABASE_URL'] %>
+production:
+  <<: *default
+  database: godwd_production
+  #   # Heroku
+  url: <%= ENV['DATABASE_URL'] %>
 #   # CleverCloud
 #   # url: <%= ENV['POSTGRESQL_ADDON_URI'] %>
 
 # for AWS
-production:
-  <<: *default
-  database: <%= ENV['RDS_DATABASE'] %>
-  username: <%= ENV['RDS_USERNAME'] %>
-  password: <%= ENV['RDS_PASSWORD'] %>
-  host: <%= ENV['RDS_HOST'] %>
-  port: 5432
+# production:
+#   <<: *default
+#   database: <%= ENV['RDS_DATABASE'] %>
+#   username: <%= ENV['RDS_USERNAME'] %>
+#   password: <%= ENV['RDS_PASSWORD'] %>
+#   host: <%= ENV['RDS_HOST'] %>
+#   port: 5432
