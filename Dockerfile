@@ -5,16 +5,15 @@ RUN apk update && apk add bash build-base nodejs  postgresql-dev tzdata
 #if needed, add yarn
 RUN gem install rails bundler --no-document
 # create folder called 'project' to host the codebase
-ENV RAILS_ROOT /project
-RUN mkdir -p $RAILS_ROOT
+
+RUN mkdir -p /api
 # set the wroking directory to 'project' folder
-WORKDIR $RAILS_ROOT
+WORKDIR /api
 # copy from current directory '.' to the working directory './'
-COPY Gemfile Gemfile.lock . ./
+COPY Gemfile /api/Gemfile
+COPY Gemfile.lock /api/Gemfile.lock
 
 
-ENV RAILS_ENV='production'
-ENV RACK_ENV='production'
 
 # install the bundler gem. Should match the version in 'Gemfile.lock'
 RUN bundle install --no-binstubs || bundle check
@@ -29,7 +28,7 @@ RUN bundle install --no-binstubs || bundle check
 #RUN yarn install --check-files
 
 # copy the codebase into Docker
-COPY . ./
+COPY . /api
 
 EXPOSE 3001
 # set the start command

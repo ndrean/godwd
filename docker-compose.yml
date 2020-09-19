@@ -1,56 +1,52 @@
-version: "3.4"
-# to build multi-container app
-# here: Postgres, Sidekiq, Redis, Rails
+version: "3"
 volumes:
   redis:
   postgres:
-  project:
 
 services:
-  db:
-    image: "postgres:12.4-alpine"
+  postgres:
+    image: postgres
+    # environment:
+    #   POSTGRES_HOST_AUTH_METHOD: "trust"
     volumes:
-      - "postgres:/var/lib/postgresql/data"
-    ports:
-      - "5432:5432"
+      - postgres:/var/lib/postgresql/data
     env_file:
       - ".env"
-    environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
-
-  redis:
-    image: "redis:6-alpine"
-    command: redis-server
-    ports:
-      - "6379:6379"
-    volumes:
-      - "redis:/data"
-    env_file:
-      - ".env"
-
-  sidekiq:
-    depends_on:
-      - "db"
-      - "redis"
-    build: .
-    command: bundle exec sidekiq -C config/sidekiq.yml
-    volumes:
-      - ".:/project"
-      - "/project/tmp" # don't mount tmp directory
-    environment:
-      - REDIS_URL_SIDEKIQ=redis://redis:6379/1
 
   web:
-    depends_on:
-      - "db"
-      - "redis"
     build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0' -e ${RAILS_ENV}"
+    command: bundle exec rails s -p 3001 -b '0.0.0.0'
+    volumes:
+      - .:/api
+    environment:
+      RAILS_ENV: "development"
+      REDIS_URL: "redis://redis:6379/12"
     ports:
       - "3001:3001"
-    volumes:
-      - ".:/project"
+    depends_on:
+      - "postgres"
+      - "redis"
+    env_file:
+      - ".env"
+
+  redis:
+    image: redis
+    command: redis-server
     environment:
-      - REDIS_URL_SIDEKIQ=redis://redis:6379/1
+      REDIS_URL: redis://redis:6379/12
+    volumes:
+      - redis:/data
+
+  sidekiq:
+    build: .
+    command: "bundle exec sidekiq -C config/sidekiq.yml"
+    volumes:
+      - .:/api
+    environment:
+      RAILS_ENV: "development"
+      REDIS_URL: "redis://redis:6379/12"
+    depends_on:
+      - "redis"
+      - "postgres"
     env_file:
       - ".env"

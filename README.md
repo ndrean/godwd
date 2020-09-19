@@ -162,7 +162,7 @@ React will run on 'localhost:3000" whilst Rails will run on 'localhost:3001'
 port        ENV.fetch("PORT") { 3001 }
 ```
 
-CORS
+# CORS
 
 CORS stands for Cross-Origin Resource Sharing, a standard that lets developers specify who can access the assets on a server and what HTTP requests are accepted. For example, a restrictive 'same-origin' policy would prevent your Rails API at localhost:3001 from sending and receiving data to your front-end at localhost:3000.
 
@@ -215,4 +215,25 @@ if params[:event][:itinary_attributes][:start_gps]
   params[:event][:itinary_attributes][:start_gps] = params[:event][:itinary_attributes][:start_gps][0].split(',')
   params[:event][:itinary_attributes][:end_gps] = params[:event][:itinary_attributes][:end_gps][0].split(',')
 end
+```
+
+# Docker
+
+<https://nickjanetakis.com/blog/dockerize-a-rails-5-postgres-redis-sidekiq-action-cable-app-with-docker-compose>
+
+Needs in `.env`:
+
+- Postgres:
+
+```
+# .env (Postgres Docker)
+POSTGRES_USER=postgres
+POTGRES_PASSWORD=postgres
+```
+
+- Redis:
+
+```
+# .env
+REDIS_URL='redis://localhost:6379'
 ```
