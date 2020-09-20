@@ -1,4 +1,4 @@
-# README
+# Database structure
 
 3 tables, where 'events' is a joint table.
 
@@ -64,11 +64,14 @@ ALTER TABLE "users" ADD CONSTRAINT "fk_rails_events_users" FOREIGN KEY ("id") RE
 config.active_record.schema_format :ruby
 ```
 
-If set to `:sql` then the schema is in `db/structure.sql` and run:
+so we can do `rails db:schema.load` instead of running all the migrations with `rails db:migrate`.
+
+Once `docker-compose up`, we can do:
 
 ```bash
-rails db:schema:load
-rails db:seed
+docker-compose exec rails db:create
+docker-compose exec web rails db:schema:load
+docker-compose exec web rails db:seed
 ```
 
 # HTTP Caching w/Rails
@@ -104,45 +107,91 @@ Other HTTP caching iwth Rails (non API):
 
 ## Sidekiq setup
 
-Added `/config/sidekiq.rb` with `Redis`.
+- added to '/config/application;rb`the declaration:`config.active_job.queue_adapter = :sidekiq` tells ActiveJob to use Sidekiq.
+
+- Added `/config/sidekiq.rb` with `Redis`.
+
 <https://github.com/mperham/sidekiq/wiki>
 <https://enmanuelmedina.com/en/posts/rails-sidekiq-heroku>
 
-The sidekiq console is available at http://localhost:3001/sidekiq since a route is defined:
+When we defined the route:
 
 ```ruby
 mount Sidekiq::Web => '/sidekiq'
 ```
 
-## Mail
+then the sidekiq console is available at http://localhost:3001/sidekiq.
 
-We define a class (`EventMailer` and `UserMailer`, both inheriting from `ApplicationMailer`) with actions that will be used by the controller. Each method uses a `html.erb` view to be delivered via the mail protocole `smtp`. The views use the instance variables defined in the actions.
+To run Sidekiq, we do:
 
-The mails are queued in a Redis db, and Sidekiq is used as the async framework.
+```bash
+bundle exec sidekiq --environment development -C config/sidekiq.yml
+```
+
+This will be a separate process for the process launcher `Foreman`:
+
+```bash
+worker: bundle exec sidekiq -C ./config/sidekiq.yml
+```
+
+# Mail background jons
+
+- gem 'mailgun-ruby` is usefull to get the info that a mail has been sent.
+  <https://github.com/mailgun/mailgun-ruby>
+
+We declare in '/config/application.rb' (for all environments):
+`config.action_mailer.delivery_method = :smtp`
+
+We don't use ActiveJob here to sedn async a mail, we use ActionMailer with Sidekiq and the method `deliver_later` <https://github.com/mperham/sidekiq/wiki/Active-Job>. We define a class (`EventMailer` and `UserMailer`, both inheriting from `ApplicationMailer`) with actions that will be used by the controller. Each method uses a `html.erb` view to be delivered via the mail protocole `smtp`. The views use the instance variables defined in the actions.
+
+The mails are queued in a queue named `mailers` and Sidekiq uses a Redis db.
 
 The usage of Redis is declared in the '/app/config/initializers/sidekiq.rb' and the gem 'redis'.
-For Heroku, we need to set the config vars REDIS_PROVIDER and REDIS_URL.
 
-## Cloudinary remove with Sidekiq
+For Heroku, we need to set the config vars `REDIS_PROVIDER` and `REDIS_URL`.
 
-<https://cloudinary.com/documentation/rails_integration#rails_getting_started_guide>
+For 'locahost', we set `REDIS_URL='redis://localhost:6379'`.
+
+We use `Mailgun`. Once we have registered our domain, we set the DNS TXT & CNAME provided by Mailgun in the registar provider (OVH or AWS), and the SMTP data in `/config/initializers/smtp.rb`:
+
+```ruby
+ActionMailer::Base.smtp_settings = {
+  address: 'smtp.mailgun.org',
+  port: 587,
+  domain: ENV['DOMAIN_NAME'], <=> "thedownwinder.com"
+  user_name: ENV['SMTP_USER_NAME'], <=> "postmaster@thedownwinder.com"
+  password: ENV['MAIL_APP_PASSWORD'], <=> "eac87f019exxxx"
+  authentication: :plain,
+  enable_starttls_auto: true
+}
+```
+
+# Cloudinary remove with Sidekiq
+
+- gem `Cloudinary`
+  <https://cloudinary.com/documentation/rails_integration#rails_getting_started_guide>
 
 <https://github.com/cloudinary/cloudinary_gem>
 
 > credentials: they are passed manually to each call in the method, and added as `config vars` to Heroku. The `/config/cloudinary.yml` is not used since it doesn't accept `.env` variables.
 
-We use `RemoveDirectLink`to async remove a picture from Cloudinary by the Rails backend. We can use activeJob or directly a worker.
+We use the worker `RemoveDirectLink` to async remove a picture from Cloudinary by the Rails backend. We can use activeJob or directly a worker. The '/workers' folder is not read by Rails, only Sidekiq, declared
 
-Here, we used a worker (without using ActiveJob, just include `Sidekiq::Worker` without `default queue`) and use `perform_async`.
+Here, we used a worker (without ActiveJob and `default queue`, just including `Sidekiq::Worker`) and use `perform_async`.
 
-```
+```ruby
  # /App/workers/remove_direct_link.rb
 class RemoveDirectLink
   include Sidekiq::Worker
 
   def perform(event_publicID)
+    auth = {
+        cloud_name: Rails.application.credentials.CL[:CLOUD_NAME],
+        api_key: Rails.application.credentials.CL[:API_KEY],
+        api_secret: Rails.application.credentials.CL[:API_SECRET]
+      }
     return if !event_publicID
-    Cloudinary::Uploader.destroy(event_publicID)
+    Cloudinary::Uploader.destroy(event_publicID, auth)
   end
 end
 ```
@@ -171,7 +220,7 @@ end
 
 # Puma port setup
 
-React will run on 'localhost:3000" whilst Rails will run on 'localhost:3001'
+React will run on '3000' and Rails will run on port '3001'
 
 ```ruby
 # /config/puma.rb
@@ -186,7 +235,7 @@ CORS stands for Cross-Origin Resource Sharing, a standard that lets developers s
 # /config/application.rb
 config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins ‘localhost:3000', 'godownwind.online'
+    origins "*"
     resource ‘*’, headers: :any, methods: [:get, :post, :options]
   end
 end
@@ -202,7 +251,19 @@ REDIS_URL='redis://localhost:6379'
 ...config.redis = { url: ENV['REDIS_URL'], size: 2 }
 ```
 
-# Procfile
+To run Redis, we do:
+
+```bash
+brew services redis-server
+```
+
+We declare another process for Forman (Procfile):
+
+```bash
+redis: redis-server --port 6379
+```
+
+# Procfile & Foreman
 
 > Dev localhost mode:
 
@@ -232,7 +293,7 @@ The `DATABASE_URL` wil be set by Heroku.
 
 <https://pawelurbanek.com/rails-gzip-brotli-compression>
 
-```
+```ruby
 #/config.application.rb
   config.middleware.use Rack::Deflater
 ```
@@ -241,13 +302,22 @@ The `DATABASE_URL` wil be set by Heroku.
 
 <https://stackoverflow.com/questions/63404637/rails-submitting-array-to-postgres>
 
-To accept an array, we need to separate between the ','.
+To accept an array, we need to separate between the ',' when we read the params in the controller.
 
-```
+```ruby
 if params[:event][:itinary_attributes][:start_gps]
   params[:event][:itinary_attributes][:start_gps] = params[:event][:itinary_attributes][:start_gps][0].split(',')
   params[:event][:itinary_attributes][:end_gps] = params[:event][:itinary_attributes][:end_gps][0].split(',')
 end
+```
+
+We can also do the job directly in React: if we read an array `start_gps=[45,1]`, then to pass into `event:{itinary_attributes: {start_gps: [], end_gps: [] } }`, we do:
+
+```js
+fd.append("event[itinary_attributes][start_gps][]", itinary.start_gps[0] || "");
+fd.append("event[itinary_attributes][start_gps][]", itinary.start_gps[1] || "");
+fd.append("event[itinary_attributes][end_gps][]", itinary.end_gps[0] || "");
+fd.append("event[itinary_attributes][end_gps][]", itinary.end_gps[1] || "");
 ```
 
 # Running multiple processes
@@ -258,11 +328,27 @@ The `database.yml` musn't use the key `db` (or set `localhost`)
 
 # Docker
 
+- need to add `host: db` in `database.yml` in lieu of `host: localhost` when working with localhost & foreman
+
+- sequence `docker build .`, then `docker-compose up` one by one, `db`, then `sidekiq`, then `web`(otherwise you get an error due to `Bootsnap`).
+
+- the db is created, then `docker-compose exec web rails db:schema:load` and `db:seed`.
+
+- Note: need to set `POSTGRES_PASSWORD: xxx` in the service `web|environment`
+
+- get IPAdress with `docker inspect <containerID> | grep `IPAddress`(and the container Id is given in the list`docker ps -a`)
+
 ```bash
 rm -rf tmp/*
 docker rm $(docker ps -q -a) -f
 docker rmi $(docker images -q) -f
+docker build .
 docker-compose up --build
+docker-compose up -d web
+docker-compose up -d sidekiq
+docker-compose exec web rake db:create
+docker-compose exec web rake db:schema:load
+docker-compose exec web rake db:seeds
 ```
 
 Set the key `host: db` in `database.yml` where `db` is the name of the Postgresql service in `docker-compose.yml`.
@@ -307,6 +393,9 @@ docker-compose exec web rails db:create
 docker-compse exec web rails db:schema:load # instead of db:migrate
 docker-compose exec web rails db:seed
 ```
+
+- connect from local machine to a PSQL db in Docker:
+  <https://medium.com/better-programming/connect-from-local-machine-to-postgresql-docker-container-f785f00461a7>
 
 ## docker commands
 

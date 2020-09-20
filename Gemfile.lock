@@ -108,8 +108,6 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
-    mailgun-ruby (1.2.0)
-      rest-client (~> 2.0.2)
     marcel (0.3.3)
       mimemagic (~> 0.3.2)
     method_source (1.0.0)
@@ -218,7 +216,6 @@ DEPENDENCIES
   knock
   letter_opener
   listen (~> 3.2)
-  mailgun-ruby
   pg (>= 0.18, < 2.0)
   puma (~> 4.1)
   rack-brotli

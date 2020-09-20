@@ -29,7 +29,7 @@ gem 'jwt'
 gem 'knock'
 
 # Use Mailgun for sending mails: config DNS in OVH.
-gem 'mailgun-ruby'
+#gem 'mailgun-ruby'
 
 
 
