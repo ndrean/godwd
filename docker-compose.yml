@@ -1,30 +1,36 @@
 version: "3"
-volumes:
-  redis:
-  postgres:
+# volumes:
+#   redis:
+#   postgres:
 
 services:
-  postgres:
+  db:
     image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: godwd_development
     # environment:
-    #   POSTGRES_HOST_AUTH_METHOD: "trust"
+    #   - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-      - postgres:/var/lib/postgresql/data
-    env_file:
-      - ".env"
+      - ./tmp/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    # env_file:
+    #   - ".env"
 
   web:
     build: .
-    command: bundle exec rails s -p 3001 -b '0.0.0.0'
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0'"
     volumes:
       - .:/api
     environment:
       RAILS_ENV: "development"
-      REDIS_URL: "redis://redis:6379/12"
+      REDIS_URL: "redis://redis:6379/1"
     ports:
       - "3001:3001"
     depends_on:
-      - "postgres"
+      - "db"
       - "redis"
     env_file:
       - ".env"
@@ -33,9 +39,9 @@ services:
     image: redis
     command: redis-server
     environment:
-      REDIS_URL: redis://redis:6379/12
+      REDIS_URL: redis://redis:6379/1
     volumes:
-      - redis:/data
+      - ./tmp/redis:/data
 
   sidekiq:
     build: .
@@ -44,9 +50,9 @@ services:
       - .:/api
     environment:
       RAILS_ENV: "development"
-      REDIS_URL: "redis://redis:6379/12"
+      REDIS_URL: "redis://redis:6379/1"
     depends_on:
       - "redis"
-      - "postgres"
+      - "db"
     env_file:
       - ".env"

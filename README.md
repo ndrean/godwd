@@ -55,6 +55,22 @@ ALTER TABLE "itinaries" ADD CONSTRAINT "fk_rails_events_itinaries" FOREIGN KEY (
 ALTER TABLE "users" ADD CONSTRAINT "fk_rails_events_users" FOREIGN KEY ("id") REFERENCES "events" ("user_id");
 ```
 
+# schema.rb
+
+<https://edgeguides.rubyonrails.org/active_record_migrations.html#schema-dumping-and-you>
+
+```ruby
+# /config/application.rb
+config.active_record.schema_format :ruby
+```
+
+If set to `:sql` then the schema is in `db/structure.sql` and run:
+
+```bash
+rails db:schema:load
+rails db:seed
+```
+
 # HTTP Caching w/Rails
 
 `api:rails: ConditionalGet`
@@ -176,6 +192,16 @@ config.middleware.insert_before 0, Rack::Cors do
 end
 ```
 
+# Redis
+
+```ruby
+# .env
+REDIS_URL='redis://localhost:6379'
+
+#/config/initializers/sidekiq.rb
+...config.redis = { url: ENV['REDIS_URL'], size: 2 }
+```
+
 # Procfile
 
 > Dev localhost mode:
@@ -192,8 +218,15 @@ redis: redis-server --port 6379
 ```
 api: bundle exec bin/rails server -p 3001
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
-redis: redis-server --port 6379
 ```
+
+- settings.config vars:
+
+`REDIS_URL` will be set in 'setttings/config vars' after setting `REDIS_PROVIDER=REDISTOGO_URL` (free)
+
+Set the keys `RAILS_MASTER_KEY` and `SECRET_KEY_BASE` (do `EDITOR="code ...wait" rails credentials:edit` to set)
+
+The `DATABASE_URL` wil be set by Heroku.
 
 # Compression
 
@@ -217,7 +250,26 @@ if params[:event][:itinary_attributes][:start_gps]
 end
 ```
 
+# Running multiple processes
+
+Use `foreman`
+
+The `database.yml` musn't use the key `db` (or set `localhost`)
+
 # Docker
+
+```bash
+rm -rf tmp/*
+docker rm $(docker ps -q -a) -f
+docker rmi $(docker images -q) -f
+docker-compose up --build
+```
+
+Set the key `host: db` in `database.yml` where `db` is the name of the Postgresql service in `docker-compose.yml`.
+
+```ruby
+
+```
 
 <https://nickjanetakis.com/blog/dockerize-a-rails-5-postgres-redis-sidekiq-action-cable-app-with-docker-compose>
 
@@ -237,3 +289,34 @@ POTGRES_PASSWORD=postgres
 # .env
 REDIS_URL='redis://localhost:6379'
 ```
+
+Set for Postgres:
+
+```
+# .env
+# Postgres Docker
+POSTGRES_DB=godwd_development
+POSTGRES_USER=postgres
+POTGRES_PASSWORD=postgres
+```
+
+- create the database
+
+```bash
+docker-compose exec web rails db:create
+docker-compse exec web rails db:schema:load # instead of db:migrate
+docker-compose exec web rails db:seed
+```
+
+## docker commands
+
+- list all containers: `docker container ls -a`
+
+- list all containers's ids: `docker container ls -aq`
+
+- stop all containers by passing a list of ids: `docker container stop $(docker container ls -aq)`
+
+- remove all containers by passing a list of ids: `docker container rm $(docker container ls -aq)`
+
+- To wipe Docker clean and start from scratch, enter the command:
+  `docker container stop $(docker container ls –aq) && docker system prune –af ––volumes`

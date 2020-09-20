@@ -5,5 +5,5 @@ test:
   host: ‘localhost’
   port: ‘6379’
 production:
-  host: ‘your-name.iz6wli.0001.use1.cache.amazonaws.com’
+  host: #‘your-name.iz6wli.0001.use1.cache.amazonaws.com’
   port: ‘6379’

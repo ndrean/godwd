@@ -1,5 +1,5 @@
 ActionMailer::Base.smtp_settings = {
-  address: 'smtp.eu.mailgun.org',
+  address: 'smtp.mailgun.org',
   port: 587,
   domain: ENV['DOMAIN_NAME'],
   user_name: ENV['SMTP_USER_NAME'],

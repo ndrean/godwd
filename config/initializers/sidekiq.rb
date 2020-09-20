@@ -1,7 +1,7 @@
 if Rails.env.development?
   Sidekiq.configure_server do |config|
     #config.redis = { url: 'redis://localhost:6379' }
-    config.redis = { url: ENV['REDI_URL'] }
+    config.redis = { url: ENV['REDIS_URL'] }
 
   end
 end

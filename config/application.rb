@@ -9,7 +9,7 @@ require "active_storage/engine"
 require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_mailbox/engine"
-require "action_text/engine"
+#require "action_text/engine"
 require "action_view/railtie"
 # require "action_cable/engine"
 # require "sprockets/railtie"
@@ -29,6 +29,7 @@ module Godwd
     config.middleware.use Rack::Deflater
     config.middleware.use Rack::Brotli
 
+    config.active_record.schema_format :ruby
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
