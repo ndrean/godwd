@@ -5,12 +5,12 @@
 <p>From: <%= @itinary.start%></p>
 <p>To: <%= @itinary.end%></p>
 
-<p>You can email me at: <%= mail_to @user%></p>
+<p>You can contact me at: <%= mail_to @user%></p>
 
-<p> or click on this link: = > 
+<p> or directly click on this link to accept my demand: = > 
 
 <a href=<%="#{ENV['DOMAIN_NAME']}/confirmDemand?#{@params.to_query}" %>>link</a> < = 
-which notifies me that you accepted my demand.</p>
+. This will notify me that you accepted my demand.</p>
 
 <p>Cheers</p>
 
