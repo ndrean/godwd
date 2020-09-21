@@ -1,6 +1,6 @@
 if Rails.env.development?
   Sidekiq.configure_server do |config|
-    #config.redis = { url: 'redis://localhost:6379' }
+    # for provider/Heroku, need to set an env variable that provider changes
     config.redis = { url: ENV['REDIS_URL'] }
 
   end
