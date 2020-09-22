@@ -29,7 +29,8 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 # processes).
 #
 # workers ENV.fetch("WEB_CONCURRENCY") { 2 }
-# HEROKU
+# cf HEROKU
+# https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server#recommended-default-puma-process-and-thread-configuration
 workers Integer(ENV['WEB_CONCURRENCY'] || 2)
 # Use the `preload_app!` method when specifying a `workers` number.
 # This directive tells Puma to first boot the application and load code

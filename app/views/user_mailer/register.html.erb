@@ -1,14 +1,20 @@
 Hi <%= @user_email %>
 
-<p> Thanks for registering to theDownWinder.com </p>
+<p> Thanks for registering to <a href="<%=ENV['DOMAIN_HOST'] %>" >theDownWinder.com</a> </p>
+
 
 <p> Please click the link below to confirm registration: </p>
 <p> **** 
-    <a href="<%=ENV['DOMAIN_NAME']%>/mailconfirmation/?mail_token=<%=@user_confirmation_token%>">
+    <a href= "http://localhost:3001/api/v1/mailconfirmation/?mail_token=<%= @user_confirmation_token %>" >
         Confirm my account
     </a> ****
 </p>
+
 <hr>
+
+
+
+
 <p>
 Note that you need to be registered and have your mail confirmed 
 to create an event and invite other users.</p>

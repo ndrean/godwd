@@ -1,7 +1,7 @@
-version: "3.8" # docker: 19.03
-# volumes:
-#   redis:
-#   postgres:
+version: "3"
+volumes:
+  redis:
+  postgres:
 
 services:
   db:
@@ -13,7 +13,7 @@ services:
     # environment:
     #   - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-      - ./tmp/db:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
@@ -21,7 +21,7 @@ services:
     build: .
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0'"
     volumes:
-      - .:/myapp
+      - .:/
     environment:
       RAILS_ENV: "development"
       REDIS_URL: "redis://redis:6379/1"
@@ -32,7 +32,7 @@ services:
       - "db"
       - "redis"
     env_file:
-      - .env
+      - ".env"
 
   redis:
     image: redis
@@ -40,13 +40,13 @@ services:
     environment:
       REDIS_URL: redis://redis:6379/1
     volumes:
-      - ./tmp/redis:/data
+      - redis:/data
 
   sidekiq:
     build: .
     command: "bundle exec sidekiq -C config/sidekiq.yml"
     volumes:
-      - .:/myapp
+      - .:/api
     environment:
       RAILS_ENV: "development"
       REDIS_URL: "redis://redis:6379/1"
@@ -54,4 +54,4 @@ services:
       - "redis"
       - "db"
     env_file:
-      - .env
+      - ".env"

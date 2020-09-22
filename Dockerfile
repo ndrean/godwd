@@ -6,12 +6,13 @@ RUN apk update && apk add bash build-base nodejs  postgresql-dev tzdata
 RUN gem install rails bundler --no-document
 # create folder called 'project' to host the codebase
 
-RUN mkdir -p /api
-# set the wroking directory to 'api' folder
-WORKDIR /api
+
+RUN mkdir -p /myapp
+# set the working directory to 'myapp' folder
+WORKDIR /myapp
 # copy from current directory '.' to the working directory './'
-COPY Gemfile /api/Gemfile
-COPY Gemfile.lock /api/Gemfile.lock
+COPY Gemfile /myapp/Gemfile
+COPY Gemfile.lock /myapp/Gemfile.lock
 
 
 
@@ -38,6 +39,3 @@ COPY . .
 EXPOSE 3001
 # set the start command
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
-
-#ENTRYPOINT ['./entrypoint.sh']
-# chmod +x ./entrypoint.sh
