@@ -431,9 +431,11 @@ token = JWT.encode(payload, secret, 'HS256')
 
 but we use the gem `Knock`
 
-# NGINX
+# NGINX - HEROKU - Buildpack
 
 <https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nginx>
+
+The buildpack will not start NGINX until a file has been written to /tmp/app-initialized. Since NGINX binds to the dyno's $PORT and since the $PORT determines if the app can receive traffic, you can delay NGINX accepting traffic until your application is ready to handle it.
 
 First:
 
@@ -444,3 +446,11 @@ First:
 - update the `puma.rb` code to make it listen to nginx socket
 
 - modify Procfile: `bin/start-nginx-solo bundle exec puma -C ./config/puma.rb`
+
+# Procfile
+
+```bash
+web:  bin/start-nginx-solo bundle exec puma -C ./config/puma.rb
+worker: bundle exec sidekiq -C ./config/sidekiq.yml
+redis: redis-server --port 6379
+```
