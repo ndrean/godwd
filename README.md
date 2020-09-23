@@ -430,3 +430,17 @@ token = JWT.encode(payload, secret, 'HS256')
 ```
 
 but we use the gem `Knock`
+
+# NGINX
+
+<https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nginx>
+
+First:
+
+- run `heroku buildpacks:add heroku-community/nginx`
+
+- copy the `nginx.config.erb` in the '/config' folder.
+
+- update the `puma.rb` code to make it listen to nginx socket
+
+- modify Procfile: `bin/start-nginx-solo bundle exec puma -C ./config/puma.rb`
