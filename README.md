@@ -1,3 +1,12 @@
+# Details
+
+This Rails back end uses:
+
+- Postgres as database,
+- Sidekiq with Redis as the ActiveJob adapter
+- Knock (with BCrypt) for authentification
+- Cloudinary (without ActiveStorage) for storing images. The upload is done directly to Cloudinary by the front end. The FE sends the url of the image, and the BE saves it. The BE only deletes the image async.
+
 # Database structure
 
 3 tables, where 'events' is a joint table.
@@ -409,3 +418,15 @@ docker-compose exec web rails db:seed
 
 - To wipe Docker clean and start from scratch, enter the command:
   `docker container stop $(docker container ls –aq) && docker system prune –af ––volumes`
+
+# JWT, Knock
+
+We don't use the gem `jwt` such as:
+
+```ruby
+payload = { id: 1, email: 'user@example.com' }
+secret = Rails.application.credentials.secret_key_base
+token = JWT.encode(payload, secret, 'HS256')
+```
+
+but we use the gem `Knock`

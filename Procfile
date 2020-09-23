@@ -1,3 +1,3 @@
-api: bundle exec bin/rails server -p 3001
+web: bin/start-nginx bundle exec puma -C ./config/puma.rb
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
 redis: redis-server --port 6379

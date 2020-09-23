@@ -1,9 +1,8 @@
 # we build on top of an already existing image made for running Ruby code from Docker hub
 FROM ruby:2.6.6-alpine
 # install the required packages inside Docker: PostgreSQL (libpq-dev, postgres-client)
-RUN apk update && apk add bash build-base nodejs  postgresql-dev tzdata
-#if needed, add yarn
-RUN gem install rails bundler --no-document
+RUN apk update && apk add bash build-base  postgresql-dev tzdata
+#if needed, add yarn & nodejss
 # create folder called 'project' to host the codebase
 
 
@@ -17,7 +16,7 @@ COPY Gemfile.lock /myapp/Gemfile.lock
 
 
 # install the bundler gem. Should match the version in 'Gemfile.lock'
-RUN bundle install --no-binstubs || bundle check
+RUN gem install bundler --no-document && bundle install --no-binstubs || bundle check
 # Note: specific version can be set 'RUN gem install bundler -v 2.1.4'
 
 # Add a script to be executed every time the container starts.
@@ -34,7 +33,7 @@ ENTRYPOINT ["entrypoint.sh"]
 #RUN yarn install --check-files
 
 # copy the codebase into Docker
-COPY . .
+COPY . /myapp
 
 EXPOSE 3001
 # set the start command

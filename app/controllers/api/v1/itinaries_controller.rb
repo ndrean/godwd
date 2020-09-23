@@ -1,5 +1,8 @@
 class Api::V1::ItinariesController < ApplicationController
     def index
-        render json: Itinary.all
+        itinaries = Itinary.all
+        if stale?(itinaries)
+            render json: itinaries
+        end
     end
 end

@@ -3,9 +3,11 @@
 
 class RemoveDirectLink
   include Sidekiq::Worker
+  sidekiq_options retry: false
 
+    # 'perform' receives arguments from the 'perform_async' in the ctrler
     def perform(event_publicID)
-      # secret credentials set maunually each call
+      # secret credentials set maunually on each call
       auth = {
         cloud_name: Rails.application.credentials.CL[:CLOUD_NAME],
         api_key: Rails.application.credentials.CL[:API_KEY],

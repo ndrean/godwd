@@ -136,7 +136,7 @@ class Api::V1::EventsController < ApplicationController
   def destroy
     event = Event.find(params[:id])   
     return render json: { status: 401 } if event.user != current_user
-    # Sidekiq (not ActiveJob) for Cloudinary
+    # Sidekiq (not ActiveJob) for Cloudinary: perform_async in ctrl => perform in worker
     RemoveDirectLink.perform_async(event.publicID) if event.publicID
     event.itinary.destroy
     event.destroy
