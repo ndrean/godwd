@@ -36,7 +36,7 @@ http {
 
     <%# root /app/www; # path to your app %>
     location / {
-      proxy_ass http://godwd-api.herokuapp.com;
+      proxy_pass http://godwd-api.herokuapp.com;
     }
   }
 }
