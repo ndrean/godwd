@@ -42,19 +42,19 @@ preload_app!
 # Heroku
 rackup DefaultRackup
 
-listen '/tmp/nginx.socket'
+
 
 before_fork do 
     @sidekiq_pid ||= spawn('bundle exec sidekiq -t 25')
 end
 
+#### NGINX  buildpack ####
+listen '/tmp/nginx.socket'
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
 end
+####
 
-on_worker_fork do
-  FileUtils.touch('/tmp/app-initialized')
-end
 
 on_worker_boot do
     ActiveRecord::Base.establish_connection
