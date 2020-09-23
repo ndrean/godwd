@@ -49,10 +49,10 @@ before_fork do
 end
 
 #### NGINX  buildpack ####
-# listen '/tmp/nginx.socket'
-# before_fork do |server,worker|
-# 	FileUtils.touch('/tmp/app-initialized')
-# end
+listen '/tmp/nginx.socket'
+before_fork do |server,worker|
+	FileUtils.touch('/tmp/app-initialized')
+end
 ####
 
 
