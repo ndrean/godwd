@@ -51,12 +51,12 @@ before_fork do
 end
 
 #### NGINX  buildpack ###
-#bind        "unix:///tmp/nginx.socket"
-bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
-# listen '/tmp/nginx.socket'
-before_fork do |server,worker|
-	FileUtils.touch('/tmp/app-initialized')
-end
+
+# bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
+# # listen '/tmp/nginx.socket'
+# before_fork do |server,worker|
+# 	FileUtils.touch('/tmp/app-initialized')
+# end
 ####
 
 
