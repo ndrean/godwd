@@ -50,8 +50,10 @@ before_fork do
     @sidekiq_pid ||= spawn('bundle exec sidekiq -t 25')
 end
 
-#### NGINX  buildpack ####
-listen '/tmp/nginx.socket'
+#### NGINX  buildpack ###
+#bind        "unix:///tmp/nginx.socket"
+bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
+# listen '/tmp/nginx.socket'
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
 end
