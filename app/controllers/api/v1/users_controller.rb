@@ -46,7 +46,8 @@ class Api::V1::UsersController < ApplicationController
 
     if fb_user.confirm_token.blank? && !fb_user.confirm_email
       fb_user.confirm_token = SecureRandom.urlsafe_base64.to_s
-      UserMailer.register(fb_user.email, fb_user.confirm_token).deliver_later
+      # UserMailer.register(fb_user.email, fb_user.confirm_token).deliver_later
+      RegisterJob.perform_later(fb_user.email, fb_user.confirm_token)
       logger.debug "................Send Mail Register"
       fb_user.save
       return render json: fb_user, status: 200

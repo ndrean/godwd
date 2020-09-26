@@ -63,6 +63,7 @@ class Api::V1::EventsController < ApplicationController
         participant['notif'] = true
         EventMailer.invitation(participant['email'], event.id)
         .deliver_later
+
       end
       event.save
     end
