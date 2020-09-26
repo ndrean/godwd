@@ -14,6 +14,7 @@ require "action_view/railtie"
 # require "action_cable/engine"
 # require "sprockets/railtie"
 # require "rails/test_unit/railtie"
+require 'rack/brotli'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -26,8 +27,9 @@ module Godwd
     config.load_defaults 6.0
     config.autoloader= :classic
 
-    config.middleware.use Rack::Deflater
-    config.middleware.use Rack::Brotli
+    config.middleware.insert_after ActionDispatch::Static, Rack::Brotli
+    #config.middleware.use Rack::Deflater
+    #config.middleware.use Rack::Brotli
 
     config.active_record.schema_format :ruby
     # Settings in config/environments/* take precedence over those specified here.
