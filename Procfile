@@ -1,5 +1,5 @@
 
 
-web: bundle exec rails server $(PORT: -5000)
+web: bundle exec puma -C config/puma.rb
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
 redis: redis-server --port 6379
