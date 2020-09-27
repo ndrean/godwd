@@ -6,16 +6,18 @@ class Api::V1::EventsController < ApplicationController
   # GET '/api/v1/events
   def index 
     upcoming_itinaries = Itinary.where('date >?', Date.today-1)
-    events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
+      
+    events = Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
       .to_json( include: [ 
-          user: {only: [:email]},
+        user: {only: [:email]},
           itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
           ]
       )
+          
     #expires_in 3.hours, public: true
     #fresh_when(events.to_json, public: true)
     if stale?(events)
-      render json: events
+      render json: events #EventSerializer.new(events) REMOVED FASTJSON_API
     end
   end
 
@@ -118,7 +120,7 @@ class Api::V1::EventsController < ApplicationController
       ## debut test
       upcoming_itinaries = Itinary.where('date >?', Date.today-1)
       events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
-      .to_json( include: [ 
+        .to_json(include: [  
           user: {only: [:email]},
           itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
           ]

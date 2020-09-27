@@ -1,4 +1,4 @@
-:concurrency: 2
+:concurrency: 3
 :timeout: 8 # heroku
 :verbose: true
 :max_retries: 1
@@ -7,3 +7,7 @@
   - mailers
 production:
   :logfile: ./log/sidekiq.log
+# we defined a queue 'mailers' so this file is need
+# cf https://github.com/mperham/sidekiq/wiki/Advanced-Options
+# the concurrency value is calculated as per:
+# https://manuelvanrijn.nl/sidekiq-heroku-redis-calc/

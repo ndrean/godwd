@@ -250,7 +250,24 @@ config.middleware.insert_before 0, Rack::Cors do
 end
 ```
 
-# Redis
+# Sidekiq, Redis setup
+
+<https://manuelvanrijn.nl/sidekiq-heroku-redis-calc/>
+
+1 worker, 1 dyno, 5 web thread
+
+```ruby
+# /config/initializers/sidekiq.rb
+if Rails.env.production?
+  Sidekiq.configure_client do |config|
+    config.redis = { url: ENV['REDIS_URL'], size: 3, network_timeout: 5 }
+  end
+
+  Sidekiq.configure_server do |config|
+    config.redis = { url: ENV['REDIS_URL'], size: 5, network_timeout: 5 }
+  end
+end
+```
 
 ```ruby
 # .env
@@ -379,6 +396,8 @@ POTGRES_PASSWORD=postgres
 ```
 
 - Redis:
+
+Setup with <https://manuelvanrijn.nl/sidekiq-heroku-redis-calc/>
 
 ```
 # .env
