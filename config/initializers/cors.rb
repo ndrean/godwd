@@ -4,7 +4,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins '*', 'https://localhost:3000', 'thedownwinder.com' #'my-netlify-url', 'www.godownwind.online'
+    origins '*'#'my-netlify-url', 'www.godownwind.online'
 
     resource '*',
       headers: :any,
