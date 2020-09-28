@@ -47,9 +47,9 @@ rackup DefaultRackup
 
 
 
-before_fork do 
-    @sidekiq_pid ||= spawn('bundle exec sidekiq -t 2')
-end
+# before_fork do 
+#     @sidekiq_pid ||= spawn('bundle exec sidekiq -t 2')
+# end
 
 #### NGINX  buildpack ###
 

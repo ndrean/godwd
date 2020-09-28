@@ -4,8 +4,8 @@ This Rails back end uses:
 
 - Postgres as database,
 - Sidekiq with Redis as the ActiveJob adapter
-- Knock (with BCrypt) for authentification
-- Cloudinary (without ActiveStorage) for storing images. The upload is done directly to Cloudinary by the front end. The FE sends the url of the image, and the BE saves it. The BE only deletes the image async.
+- Knock (with BCrypt and JWT) for authentification
+- Cloudinary (without ActiveStorage) for storing images. The upload is done directly to Cloudinary by the front end. The front end sends the url of the image, and the back end saves it. The back end only deletes the image async with a Sidekiq worker.
 
 # Database structure
 
@@ -283,7 +283,7 @@ To run Redis, we do:
 brew services redis-server
 ```
 
-We declare another process for Forman (Procfile):
+We declare another process for Foreman (Procfile):
 
 ```bash
 redis: redis-server --port 6379
@@ -440,7 +440,13 @@ docker-compose exec web rails db:seed
 
 # JWT, Knock
 
-We don't use the gem `jwt` such as:
+<https://www.techandstartup.org/tutorials/rails-react-jwt>
+
+<https://davidgay.org/programming/jwt-auth-rails-6-knock/>
+
+`Knock` uses the gems `jwt` and we add the gem `bcrypt` for the `has_secure_password` attribute in the `User`model.
+
+- Install: `rails g 
 
 ```ruby
 payload = { id: 1, email: 'user@example.com' }
@@ -469,7 +475,9 @@ First:
 # Procfile
 
 ```bash
-web:  bin/start-nginx-solo bundle exec puma -C ./config/puma.rb
+foreman start -f Procfile.dev
+# web:  bin/start-nginx-solo bundle exec puma -C ./config/puma.rb
+web: bundle exec puma -t 5:5 -p ${PORT:-3001} -e ${RACK_ENV:-development}
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
 redis: redis-server --port 6379
 ```

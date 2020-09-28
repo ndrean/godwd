@@ -25,7 +25,7 @@ module Godwd
     # Initialize configuration defaults for originally generated Rails version.
     config.active_job.queue_adapter     = :sidekiq
     config.load_defaults 6.0
-    config.autoloader= :classic
+    # config.autoloader= :classic
 
     config.middleware.insert_after ActionDispatch::Static, Rack::Brotli
     #config.middleware.use Rack::Deflater

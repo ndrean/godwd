@@ -1,4 +1,4 @@
-:concurrency: 3
+:concurrency: 5
 :timeout: 8 # heroku
 :verbose: true
 :max_retries: 1

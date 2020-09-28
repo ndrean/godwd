@@ -26,8 +26,9 @@ gem 'redis', '~> 4.0'
 
 # Use Active Model has_secure_password
 gem 'bcrypt', '~> 3.1.7'
-gem 'jwt'
-gem 'knock'
+gem 'jwt', '~> 2.2.1'
+gem "knock", github: "nsarno/knock", branch: "master",
+    ref: "9214cd027422df8dc31eb67c60032fbbf8fc100b"
 
 # Use Mailgun for sending mails: config DNS in OVH.
 #gem 'mailgun-ruby'
@@ -52,7 +53,7 @@ group :development, :test do
 end
 
 group :development do
-  # gem 'listen', '~> 3.2'
+  gem 'listen', '~> 3.2'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
