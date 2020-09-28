@@ -35,7 +35,7 @@ http {
 
   server {
     listen <%= ENV['PORT']%>;
-    server_name _;
+    server_name godwd-api.herokuapp.com;
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
