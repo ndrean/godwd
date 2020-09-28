@@ -446,7 +446,7 @@ docker-compose exec web rails db:seed
 
 `Knock` uses the gems `jwt` and we add the gem `bcrypt` for the `has_secure_password` attribute in the `User`model.
 
-- Install: `rails g 
+- Install: `rails g
 
 ```ruby
 payload = { id: 1, email: 'user@example.com' }
@@ -481,3 +481,107 @@ web: bundle exec puma -t 5:5 -p ${PORT:-3001} -e ${RACK_ENV:-development}
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
 redis: redis-server --port 6379
 ```
+
+# Old files
+
+# class RegisterJob < ApplicationJob
+
+# queue_as :mailers
+
+# def perform(fb_user_email, fb_user_confirm_token)
+
+# UserMailer.register(fb_user_email, fb_user_confirm_token).deliver
+
+# end
+
+# end
+
+# version with ActiveJob : use "RemoveDirectLink.perform_later" in controller
+
+# class RemoveDirectLink < ApplicationJob
+
+# queue_as :default
+
+# def perform(event_publicID)
+
+# auth = {
+
+# cloud_name: Rails.application.credentials.CL[:CLOUD_NAME],
+
+# api_key: Rails.application.credentials.CL[:API_KEY],
+
+# api_secret: Rails.application.credentials.CL[:API_SECRET]
+
+# }
+
+# return if !event_publicID
+
+# Cloudinary::Uploader.destroy(event_publicID, auth)
+
+# end
+
+# end
+
+daemon off;
+
+# Heroku dynos have at least 4 cores.
+
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+use epoll;
+accept_mutex on;
+worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+http {
+gzip on;
+gzip_comp_level 2;
+gzip_min_length 512;
+
+server_tokens off;
+
+log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
+error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+
+include mime.types;
+default_type application/octet-stream;
+sendfile on;
+
+# Must read the body in 5 seconds.
+
+client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+
+upstream app_server {
+server unix:/tmp/nginx.socket fail_timeout=0;
+}
+
+server {
+listen 8080;
+<%# <%= ENV["PORT"] %>;
+server_name app_server:3001;
+keepalive_timeout 5;
+client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
+
+    <%# root /app/public; # path to your app %>
+
+
+    location / {
+
+try_files $uri $uri/ /index.html;
+}
+location /api {
+rewrite ^/api/?(.\*) /\$1 break;
+proxy_pass http://app_server/;
+}
+
+    # location / {
+    #   proxy_pass http://app_server;
+    #   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #   proxy_set_header Host $http_host;
+    #   proxy_redirect off;
+    # }
+
+}
+}
