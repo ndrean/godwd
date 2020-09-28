@@ -1,6 +1,7 @@
 class UserMailer < ApplicationMailer
     default from: ENV['SMTP_USER_NAME']
     
+
     def register(user_email, user_confirmation_token)
         @user_email = user_email
         @user_confirmation_token = user_confirmation_token

@@ -13,5 +13,8 @@ if Rails.env.production?
 
   Sidekiq.configure_server do |config|
     config.redis = { url: ENV['REDIS_URL'], size: 12, network_timeout: 5 }
+    config.server_middleware do |chain|
+      chain.add Middleware::Server::RetryJobs, retry: false
+    end
   end
 end
