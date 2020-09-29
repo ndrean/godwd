@@ -53,7 +53,7 @@ rackup DefaultRackup
 # end
 
 #### NGINX  buildpack ###
-bind ENV.fetch('PUMA_SOCK') { 'unix://app/tmp/nginx.socket' }
+bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
 # sock = UNIXServer.new('/tmp/nginx.socket')
 # sock.listen backlog: 1024
 # listen '/tmp/nginx.socket'
