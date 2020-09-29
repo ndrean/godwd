@@ -30,12 +30,12 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-		server unix://app_server/tmp/nginx.socket fail_timeout=0;
+		server unix:/tmp/nginx.socket fail_timeout=0;
  	}
 
   server {
     listen <%= ENV['PORT']%>;
-    server_name godwd-api.herokuapp.com;
+    server_name _;
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
@@ -49,7 +49,7 @@ http {
     location /api/v1 {
   	  rewrite    ^/api/?(.*) /$1 break;
 		  proxy_pass http://app_server;
-      proxy_redirect https://app_server /api/v1/;
+      proxy_redirect off;
       <%# proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; %>
       <%# proxy_set_header Host $http_host; %>
     }
