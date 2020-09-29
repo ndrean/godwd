@@ -30,7 +30,7 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-		server unix:/tmp/sockets/nginx.socket fail_timeout=0;
+		server unix:/tmp/nginx.socket fail_timeout=0;
  	}
 
   server {
@@ -42,9 +42,10 @@ http {
     
     <%# root /app/public; # path to your app %>
 
-    location / {
-  	    try_files $uri $uri/ /index.html;
-    }
+    # location / {
+  	#     try_files $uri $uri/ /index.html;
+    # }
+
     location @app_server {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header Host $http_host;
