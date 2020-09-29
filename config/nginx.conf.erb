@@ -30,7 +30,7 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-		server unix:/tmp/nginx.socket fail_timeout=0;
+		server unix:app/tmp/nginx.socket fail_timeout=0;
  	}
 
   server {
@@ -43,7 +43,7 @@ http {
     <%# root /app/public; # path to your app %>
 
     # location / {
-  	#     try_files $uri $uri/ /index.html;
+  	#     try_files $uri @app_server;
     # }
 
     location @app_server {
