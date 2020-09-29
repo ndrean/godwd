@@ -51,9 +51,10 @@ rackup DefaultRackup
 # before_fork do 
 #     @sidekiq_pid ||= spawn('bundle exec sidekiq -t 2')
 # end
+app_dir = File.expand_path("../..", __FILE__)
 
 #### NGINX  buildpack ###
-bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
+bind ENV.fetch('PUMA_SOCK') { "unix://#{app_dir}/tmp/nginx.socket" }
 # sock = UNIXServer.new('/tmp/nginx.socket')
 # sock.listen backlog: 1024
 # listen '/tmp/nginx.socket'
