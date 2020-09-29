@@ -9,6 +9,7 @@
 #
 
 require 'fileutils'
+require 'socket'
 
 max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
 min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
@@ -52,10 +53,10 @@ rackup DefaultRackup
 # end
 
 #### NGINX  buildpack ###
-# bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
-sock = UNIXServer.new('tmp/nginx.socket')
-# bind "unix:///tmp/nginx.socket", backlog: 1024
+bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
+sock = UNIXServer.new('/tmp/nginx.socket')
 sock.listen backlog: 1024
+puts 'done'
 # listen '/tmp/nginx.socket'
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
