@@ -54,9 +54,9 @@ rackup DefaultRackup
 app_dir = File.expand_path("../..", __FILE__)
 
 #### NGINX  buildpack ###
-bind ENV.fetch('PUMA_SOCK') { "unix://#{app_dir}/tmp/nginx.socket" }
-# sock = UNIXServer.new("#{app_dir}/tmp/nginx.socket")
-# sock.listen backlog: 1024
+# bind ENV.fetch('PUMA_SOCK') { "unix://#{app_dir}/tmp/nginx.socket" }
+sock = UNIXServer.new("#{app_dir}/tmp/nginx.socket")
+sock.listen(1024)
 # listen '/tmp/nginx.socket'
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
