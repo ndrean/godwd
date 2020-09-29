@@ -56,7 +56,7 @@ rackup DefaultRackup
 bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
 sock = UNIXServer.new('/tmp/nginx.socket')
 sock.listen backlog: 1024
-puts 'done'
+logger.debug  '.............done'
 # listen '/tmp/nginx.socket'
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
