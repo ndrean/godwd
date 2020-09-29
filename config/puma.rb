@@ -52,7 +52,8 @@ rackup DefaultRackup
 # end
 
 #### NGINX  buildpack ###
-bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
+# bind ENV.fetch('PUMA_SOCK') { 'unix:///tmp/nginx.socket' }
+bind "unix:///tmp/nginx.socket"
 # listen '/tmp/nginx.socket'
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
