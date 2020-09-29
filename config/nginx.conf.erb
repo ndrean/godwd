@@ -30,7 +30,8 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-		server unix:/tmp/nginx.socket fail_timeout=0;
+		# server unix:/tmp/nginx.socket fail_timeout=0;
+    server godwd-api.herokuapp.com
  	}
 
   server {
