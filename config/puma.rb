@@ -16,7 +16,7 @@ min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port        3001 #ENV.fetch("PORT") { 3001 }
+# port       ENV["PORT"]  || 3001
 
 # Specifies the `environment` that Puma will run in.
 # HEROKU
@@ -56,9 +56,7 @@ rackup DefaultRackup
 #### NGINX  buildpack ###
 # bind ENV.fetch('PUMA_SOCK') { "unix://#{app_dir}/tmp/nginx.socket" }
 bind "unix://#{app_dir}/tmp/sockets/nginx.socket"
-# sock = UNIXServer.new("#{app_dir}/tmp/nginx.socket")
-# sock.listen(1024)
-#listen "#{app_dir}/tmp/nginx.socket"
+
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
 end
