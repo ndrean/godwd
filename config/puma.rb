@@ -16,15 +16,16 @@ min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-#
-port        ENV.fetch("PORT") { 3001 }
+port        3001 #ENV.fetch("PORT") { 3001 }
 
 # Specifies the `environment` that Puma will run in.
 # HEROKU
-environment ENV.fetch("RAILS_ENV") || "development" 
+environment ENV.fetch("RAILS_ENV") || "production" 
+
+app_dir = File.expand_path("../..", __FILE__)
 
 # Specifies the `pidfile` that Puma will use.
-pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
+pidfile ENV.fetch("PIDFILE") { "#{app_dir}/tmp/pids/server.pid" }
 
 # Specifies the number of `workers` to boot in clustered mode.
 # Workers are forked web server processes. If using threads and workers together
@@ -47,14 +48,14 @@ preload_app!
 rackup DefaultRackup
 
 
-
 # before_fork do 
 #     @sidekiq_pid ||= spawn('bundle exec sidekiq -t 2')
 # end
-app_dir = File.expand_path("../..", __FILE__)
+
 
 #### NGINX  buildpack ###
-bind ENV.fetch('PUMA_SOCK') { "unix://#{app_dir}/tmp/nginx.socket" }
+# bind ENV.fetch('PUMA_SOCK') { "unix://#{app_dir}/tmp/nginx.socket" }
+bind "unix://#{app_dir}/tmp/sockets/nginx.socket"
 # sock = UNIXServer.new("#{app_dir}/tmp/nginx.socket")
 # sock.listen(1024)
 #listen "#{app_dir}/tmp/nginx.socket"
