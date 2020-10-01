@@ -15,7 +15,7 @@ gem 'puma', '~> 4.1'
 
 gem 'rack-brotli'
 
-gem 'fast_jsonapi'
+# gem 'fast_jsonapi'
 
 # Use Sidekiq for background processing
 gem 'sidekiq'
