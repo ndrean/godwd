@@ -23,7 +23,7 @@ threads threads_count, threads_count
 # is Puma runs alone, then specifiy the port, otheriwse if NGINX, a unix socket
 port       ENV.fetch("PORT") { 3002 }
 
-app_dir = File.expand_path("../..", __FILE__)
+app_dir = "/app" # File.expand_path("../..", __FILE__)
 
 ENV.fetch('APP_DIR', app_dir.to_s)
 # Specifies the `environment` that Puma will run in.
