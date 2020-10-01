@@ -53,7 +53,6 @@ rackup      DefaultRackup
 
 
 #### NGINX  buildpack ###
-# bind ENV.fetch('PUMA_SOCK') { "unix://#{app_dir}/tmp/nginx.socket" }
 # bind "unix:///#{app_dir}/tmp/sockets/nginx.socket"
 
 before_fork do |server,worker|
