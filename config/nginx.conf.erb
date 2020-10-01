@@ -30,8 +30,8 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-		server unix:/app/tmp/sockets/nginx.socket fail_timeout=0;
-    <%# server godwd-api.herokuapp.com:3002 fail_timeout=0; %>
+		<%# server unix:/app/tmp/sockets/nginx.socket fail_timeout=0; %>
+    server godwd-api.herokuapp.com:3002 fail_timeout=0;
  	}
 
   server {
@@ -39,27 +39,28 @@ http {
     listen <%= ENV['PORT']%>;
 
     # which domain are we listening for
-    server_name godwd-api.herokuapp.com;
+    server_name _; 
+    # server_name godwd-api.herokuapp.com;
 
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
-    #try_files $uri @app_server;
+    # try_files $uri @app_server;
 
     # Set up the location to map all requests to the Ruby App
-    location /api/v1 {
+    <%# location /api/v1 {
       rewrite ^/api/v1/?(.*) /$1 break;
       #proxy_pass http://app_server/;
-    }
+    } %>
 
-    <%# location / {
+    location / {
       proxy_pass http://app_server;
       access_log off;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header Host $host;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Forwarded-Proto $scheme;
-    } %>
+    }
 
     
 

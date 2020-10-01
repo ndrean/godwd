@@ -21,7 +21,7 @@ threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 # is Puma runs alone, then specifiy the port, otheriwse if NGINX, a unix socket
-port  3002 #    ENV.fetch("PORT") { 3002 }
+port      3002 # ENV.fetch("PORT") { 3002 }
 
 app_dir =  File.expand_path("../..", __FILE__)
 
