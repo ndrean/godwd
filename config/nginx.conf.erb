@@ -42,10 +42,10 @@ http {
 
     try_files $uri @app_server;
 
-    location /api/v1 {
+    <%# location /api/v1 {
       #rewrite ^/api/v1/?(.*) /$1 break;
       proxy_pass http://app_server/;
-    }
+    } %>
 
     location @app_server {
       proxy_pass http://app_server;
