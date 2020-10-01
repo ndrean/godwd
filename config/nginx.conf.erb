@@ -31,7 +31,7 @@ http {
 
   upstream app_server {
 		<%# server unix:app/tmp/sockets/nginx.socket fail_timeout=0; %>
-    server godwd-api.herokuapp.com:3002 fail_timeout=0;
+    server godwd-api.herokuapp.com fail_timeout=0;
  	}
 
   server {
