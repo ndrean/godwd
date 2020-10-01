@@ -54,6 +54,7 @@ rackup      DefaultRackup
 
 #### NGINX  buildpack ###
 # bind "unix:///#{app_dir}/tmp/sockets/nginx.socket"
+bind "unix:///tmp/nginx.socket"
 
 before_fork do |server,worker|
 	FileUtils.touch('/tmp/app-initialized')
