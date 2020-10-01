@@ -31,7 +31,7 @@ http {
 
   upstream app_server {
 		<%# server unix:/app/tmp/sockets/nginx.socket fail_timeout=0; %>
-    server godwd-api.herokuapp.com:8080 fail_timeout=0;
+    server godwd-api.herokuapp.com:80 fail_timeout=0;
  	}
 
   server {
@@ -47,11 +47,6 @@ http {
     # try_files $uri @app_server;
 
     # Set up the location to map all requests to the Ruby App
-    <%# location /api/v1 {
-      rewrite ^/api/v1/?(.*) /$1 break;
-      #proxy_pass http://app_server/;
-    } %>
-
     location / {
       proxy_pass http://app_server;
       proxy_set_header x-forwarded-host $host;
