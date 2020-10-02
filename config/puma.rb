@@ -16,7 +16,7 @@ preload_app!
 # Heroku
 rackup      DefaultRackup
 
-# bind "unix:///tmp/nginx.socket"
+bind "unix:///tmp/nginx.socket"
 # before_fork do |server,worker|
 on_worker_fork do
 	FileUtils.touch('/tmp/app-initialized')
