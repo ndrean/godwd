@@ -51,7 +51,7 @@ http {
 
     location /api {
   	  rewrite    ^/api/?(.*) /$1 break;
-      #proxy_pass http://app_server;
+      proxy_pass http://app_server/;
     }
     
     location @app_server {
