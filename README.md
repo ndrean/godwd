@@ -553,6 +553,94 @@ sendfile on;
 
 # NGINX localhost
 
+I have a Rails 6 api served by Puma and I want to experiment Nginx as reverse proxy on Heroku. I understand that the benefit will be mostly to serve static files, and this is indeed my next step). I can make this work on localhost and after quite a bit of research on Heroku. Surprisingly, it seems to use the server `cowboy` instead of `nginx`.
+
+I first experiment this on localhost. It seems that they are 2 ways to let Puma and Nginx communicate: with unix sockets and domain names.
+
+- unix socket: I need to specify the absolute path to the file
+
+```
+#/config/puma.rb
+bind unix://my_path_to_app/tmp/sockets/nginx.socket
+
+#/usr/local/etc/nginx/nginx.conf
+http {
+  upstream app_server {
+    server unix:///my_path_to_app/tmp/sockets/nginx.socket fail_timeout=0;
+  }
+
+  server {
+    listen       8080;
+    server_name  _;
+
+    location / {
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://app_server;
+    }
+}
+```
+
+- domain. I need to specify the port (for some reason, I need to pass `127.0.0.1:3001` and not `0.0.0.:3001`):
+
+```
+#/app/config/puma.rb
+port 3001
+
+#/usr/local/etc/nginx/nginx.conf
+http {
+  upstream app_server {
+    server 127.0.0.1:3001 fail_timeout=0;
+  }
+  server {
+    ...
+  }
+}
+```
+
+After whitelisting `app_server` with `Rails.application.config.host << "app_server"` in '#/config.development.rb', both ways seem to work on localhost.
+
+Now, to make this work on Heroku. Since unix socket doesn't scale, and since Heroku parses an env variable `PORT`, I use tcp sockets.
+
+My app is located at `my-app.herokuapp.com` and I name-spaced my endpoints with '/api/v1'.
+
+- I use the buildpack `$ heroku buildpacks:add heroku-community/nginx`,
+- added a file `/app/config/nginx.config.erb` and used the directive `rewrite` for URI starting with '/api',
+- added a `Procfile`is `web: bin/start-nginx-solo bundle exec puma --config config/puma.rb`.
+
+```ruby
+#/app/config.puma.rb
+port ENV['PORT']
+preload_app!
+rackup      DefaultRackup
+```
+
+```
+#/app/config/nginx.config.erb
+daemon off;
+http {
+  upstream app_server {
+    server my-app.herokuapp.com;
+  }
+
+  server {
+    listen <%= ENV['PORT']%>;
+
+    # for every uri starting with api do:
+    location /api {
+      rewrite    ^/api/?(.*) /$1 break;
+      proxy_pass http://app_server;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+    }
+  }
+}
+```
+
+This works. Surprisingly, in the response, I see the server `Cowboy` and not `nginx` so I wonder if this works.
+
 - add to `/config/development.rb`: `config.hosts << "app_server"``
 
 - create `nginx.conf` in the nginx folder:
