@@ -50,16 +50,19 @@ http {
     #try_files $uri @app_server;
 
     location / {
-  	  rewrite    ^/?(.*) /$1 break;
-      proxy_pass http://app_server/;
+  	  rewrite               ^/?(.*) /$1 break;
+      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header      Host $host;
+      proxy_redirect        off;
+      proxy_pass            http://app_server/;
     }
     
-    location @app_server {
+    <%# location @app_server {
       proxy_pass http://app_server;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header Host $http_host;
       proxy_redirect off;
-    }
+    } %>
 
     location /favicon.ico {
       log_not_found off;
