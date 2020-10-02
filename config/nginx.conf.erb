@@ -49,8 +49,10 @@ http {
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
-    try_files $uri @app_server;
-
+    location / {
+      try_files $uri @app_server;
+    }
+    
     # Set up the location to map all requests to the Ruby App
 
     location /api {
@@ -59,10 +61,6 @@ http {
       #proxy_set_header    Host $http_host;
 		  proxy_pass http://app_server;
     }
-
-    <%# location @app_server {
-      proxy_pass http://app_server;
-    } %>
 
     location /favicon.ico {
       log_not_found off;
