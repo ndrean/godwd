@@ -15,6 +15,10 @@ preload_app!
 # Heroku
 rackup      DefaultRackup
 
+before_fork do |server,worker|
+	FileUtils.touch('/tmp/app-initialized')
+end
+
 on_worker_boot do
     ActiveRecord::Base.establish_connection
 end
