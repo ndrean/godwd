@@ -50,7 +50,7 @@ http {
     #try_files $uri @app_server;
 
     location / {
-  	  rewrite    ^/api/?(.*) /$1 break;
+  	  rewrite    ^/api/v1/?(.*) /$1 break;
       proxy_pass http://app_server/;
     }
     
