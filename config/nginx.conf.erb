@@ -54,7 +54,7 @@ http {
 
     # Set up the location to map all requests to the Ruby App
     location / {
-      proxy_pass          godwd-api.herokuapp.com:3001;
+      proxy_pass          https://godwd-api.herokuapp.com:3001;
       
       proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header    Host $http_host;
