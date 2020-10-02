@@ -43,9 +43,6 @@ http {
     # nginx listens on ENV['PORT'] for incomming http request
     listen <%= ENV['PORT']%> default_server;
 
-    # which domain are we listening for
-    # server_name godwd-api.herokuapp.com;
-
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
@@ -57,7 +54,7 @@ http {
 
     location /api {
   	  rewrite    ^/api/?(.*) /$1 break;
-      proxy_pass http://app_server;
+      proxy_pass http://app_server/;
       #proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       #proxy_set_header Host $http_host;
       #proxy_redirect off;
