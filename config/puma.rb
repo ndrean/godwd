@@ -2,7 +2,7 @@
 
 require 'fileutils'
 
-workers     ENV.fetch('WEB_CONCURRENCY') {0}
+workers     ENV.fetch('WEB_CONCURRENCY') {1}
 
 threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
 threads threads_count, threads_count
