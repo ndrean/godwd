@@ -49,7 +49,7 @@ http {
 
     #try_files $uri @app_server;
 
-    location /api {
+    location / {
   	  rewrite    ^/api/?(.*) /$1 break;
       proxy_pass http://app_server/;
     }
@@ -61,8 +61,8 @@ http {
       proxy_redirect off;
     }
 
-    <%# location /favicon.ico {
+    location /favicon.ico {
       log_not_found off;
-    }  %>
+    } 
   }
 }
