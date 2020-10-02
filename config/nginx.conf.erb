@@ -36,12 +36,12 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-    server godwd-api.herokuapp.com;
+    server godwd-api.herokuapp.com fail_timeout=0;
  	}
 
   server {
     # nginx listens on ENV['PORT'] for incomming http request
-    listen <%= ENV['PORT']%> fail_timeout=0;
+    listen <%= ENV['PORT']%> ;
 
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
