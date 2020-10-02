@@ -551,39 +551,53 @@ sendfile on;
 
 # Must read the body in 5 seconds.
 
-client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+# NGINX localhost
 
-upstream app_server {
-server unix:/tmp/nginx.socket fail_timeout=0;
+- add to `/config/development.rb`: `config.hosts << "app_server"``
+
+- create `nginx.conf` in the nginx folder:
+
+```
+#/usr/local/etc/nginx/nginx.conf
+
+worker_processes  1;
+
+events {
+    worker_connections  1024;
 }
 
-server {
-listen 8080;
-<%# <%= ENV["PORT"] %>;
-server_name app_server:3001;
-keepalive_timeout 5;
-client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
 
-    <%# root /app/public; # path to your app %>
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
 
+    upstream app_server {
+      # server 127.0.0.1:3001;
+      server unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket fail_timeout=0;
+    }
 
-    location / {
+    gzip  on;
 
-try_files $uri $uri/ /index.html;
+    server {
+      listen       8080;
+      server_name  _;
+
+      location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_pass http://app_server;
+      }
+
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+          root   html;
+      }
+    }
+    include servers/*;
 }
-location /api {
-rewrite ^/api/?(.\*) /\$1 break;
-proxy_pass http://app_server/;
-}
-
-    # location / {
-    #   proxy_pass http://app_server;
-    #   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #   proxy_set_header Host $http_host;
-    #   proxy_redirect off;
-    # }
-
-}
-}
+```
 
 mauris_tovar mariana
