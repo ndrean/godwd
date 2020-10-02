@@ -2,7 +2,7 @@
 
 require 'fileutils'
 
-workers     Integer(ENV['WEB_CONCURRENCY'] || 1)
+workers     Integer(ENV['WEB_CONCURRENCY'] || 2)
 
 threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
 threads threads_count, threads_count
@@ -16,7 +16,9 @@ preload_app!
 # Heroku
 rackup      DefaultRackup
 
-before_fork do |server,worker|
+bind "unix:///tmp/nginx.socket"
+# before_fork do |server,worker|
+on_worker_fork do
 	FileUtils.touch('/tmp/app-initialized')
 end
 
