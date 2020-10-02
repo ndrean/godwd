@@ -53,20 +53,16 @@ http {
     # try_files $uri @app_server;
 
     # Set up the location to map all requests to the Ruby App
-    <%# location @app_server {
-      proxy_pass          http://app_server;
-      #proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-      #proxy_set_header    Host $http_host;
-      proxy_redirect      off;
-      proxy_set_header    content-type "application/json";
-      break;
-    } %>
 
     location /api/v1 {
   	  rewrite    ^/api/v1/?(.*) /$1 break;
       #proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
       #proxy_set_header    Host $http_host;
-		  #proxy_pass http://app_server;
+		  proxy_pass http://app_server;
+    }
+
+    location @app_server {
+      proxy_pass http://app_server
     }
 
     location /favicon.ico {
