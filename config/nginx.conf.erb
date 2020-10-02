@@ -47,8 +47,6 @@ http {
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
-    #try_files $uri @app_server;
-
     location / {
   	  rewrite               ^/?(.*) /$1 break;
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -56,6 +54,8 @@ http {
       proxy_redirect        off;
       proxy_pass            http://app_server/;
     }
+
+    try_files $uri @app_server;
     
     <%# location @app_server {
       proxy_pass http://app_server;
