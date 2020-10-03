@@ -36,13 +36,12 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-    #server unix:/tmp/nginx.socket fail_timeout=0;
-    server godwd-api.heroku.com;
+    server unix:/tmp/nginx.socket fail_timeout=0; # version unix socket
+    #server godwd-api.heroku.com;  # version tcp/ip
  	}
 
   server {
-    listen <%= ENV['PORT']%>;  # 3001 
-    # nginx listen on this port (set by Heroku)
+    listen <%= ENV['PORT']%>;  # nginx listen on the port set by Heroku
     
     #server_name godwd-api.herokuapp.com; # which domain we are listening for
 
@@ -55,7 +54,8 @@ http {
       proxy_set_header      X-Real-IP $remote_addr;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            http://localhost:3001; #http://app_server;
+      #proxy_pass            http://localhost:3001; # config unix/socket
+      proxy_pass            http://app_server; # config tcp/ip
     }
 
     try_files $uri @app_server;
