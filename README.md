@@ -553,25 +553,34 @@ sendfile on;
 
 # NGINX localhost
 
-I have a Rails 6 api served by Puma and I want to experiment Nginx as reverse proxy on Heroku. I understand that the benefit will be mostly to serve static files, and this is indeed my next step). I can make this work on localhost and after quite a bit of research on Heroku. Surprisingly, it seems to use the server `cowboy` instead of `nginx`.
+## localhost settings:
 
-I first experiment this on localhost. It seems that they are 2 ways to let Puma and Nginx communicate: with unix sockets and domain names.
+They are 2 ways to let Puma and Nginx communicate: with unix sockets and tcp/ip domain names.
 
-- unix socket: I need to specify the absolute path to the file
+- unix socket:
 
 ```
 #/config/puma.rb
-bind unix://my_path_to_app/tmp/sockets/nginx.socket
+!! remove port 3001 (port where Rails listens to)
+bind "unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket"
+preload_app!
+rackup      DefaultRackup
+on_worker_fork do
+	FileUtils.touch('/tmp/app-initialized')
+end
+
+on_worker_boot do
+    ActiveRecord::Base.establish_connection
+end
 
 #/usr/local/etc/nginx/nginx.conf
 http {
   upstream app_server {
-    server unix:///my_path_to_app/tmp/sockets/nginx.socket fail_timeout=0;
+    server unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket fail_timeout=0;
   }
 
   server {
     listen       8080;
-    server_name  _;
 
     location / {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -582,11 +591,12 @@ http {
 }
 ```
 
-- domain. I need to specify the port (for some reason, I need to pass `127.0.0.1:3001` and not `0.0.0.:3001`):
+- tcp. I need to specify the port (for some reason, I need to pass `127.0.0.1:3001` and not `0.0.0.:3001`):
 
 ```
 #/app/config/puma.rb
 port 3001
+!!! remove bind "unix://..."
 
 #/usr/local/etc/nginx/nginx.conf
 http {
@@ -594,40 +604,45 @@ http {
     server 127.0.0.1:3001 fail_timeout=0;
   }
   server {
-    ...
+    listen          8080;
+
+    location / {
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header  Host $host;
+      proxy_redirect    off;
+      proxy_pass        http://app_server;
+    }
   }
 }
 ```
 
-After whitelisting `app_server` with `Rails.application.config.host << "app_server"` in '#/config.development.rb', both ways seem to work on localhost.
+- whitelisting `app_server` with: `Rails.application.config.host << "app_server"` in '#/config.development.rb'.
+- Procfile `web: bundle exec puma -p 3001 -C config/puma.rb`
 
-Now, to make this work on Heroku. Since unix socket doesn't scale, and since Heroku parses an env variable `PORT`, I use tcp sockets.
+## Heroku production.
 
 My app is located at `my-app.herokuapp.com` and I name-spaced my endpoints with '/api/v1'.
 
-- I use the buildpack `$ heroku buildpacks:add heroku-community/nginx`,
-- added a file `/app/config/nginx.config.erb` and used the directive `rewrite` for URI starting with '/api',
-- added a `Procfile`is `web: bin/start-nginx bundle exec puma --config config/puma.rb`.
+- buildpack : `$ heroku buildpacks:add heroku-community/nginx`,
+- add to `Procfile`: `web: bin/start-nginx bundle exec puma --config config/puma.rb`
+- add a file `/app/config/nginx.config.erb` using the biolerplate given by Heroku.
+
+### Mode tcp/ip
 
 ```ruby
-#/app/config.puma.rb
-# https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server
-
 require 'fileutils'
 
-# puma in single mode => set wrokers to 'O'
+# puma in single mode => set workers to 'O'
 workers     ENV.fetch('WEB_CONCURRENCY') {2}
 threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
 threads threads_count, threads_count
 
 # can't put port for tcp socket & unix socket
-# port        ENV['PORT']
+port        3001
 environment ENV.fetch("RAILS_ENV") { "development" }
 preload_app!
 rackup      DefaultRackup
 
-bind "unix:///tmp/nginx.socket"
-# before_fork do |server,worker|
 on_worker_fork do
 	FileUtils.touch('/tmp/app-initialized')
 end
@@ -637,7 +652,6 @@ on_worker_boot do
 end
 
 plugin :tmp_restart
-
 on_restart do
     Sidekiq.redis.shutdown { |conn| conn.close }
 end
@@ -646,126 +660,63 @@ end
 ```
 #/app/config/nginx.config.erb
 daemon off;
-
+# nb of cores per dyno is 4
 worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
 
 events {
-  use epoll;
-  accept_mutex on;
-  worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+  [...]
 }
 
-error_log stderr;
-
 http {
-  gzip on;
-  gzip_comp_level 2;
-  gzip_min_length 512;
-  gzip_types
-    "application/json;charset=utf-8" application/json
-    "application/javascript;charset=utf-8" application/javascript text/javascript
-    "application/xml;charset=utf-8" application/xml text/xml
-    "text/css;charset=utf-8" text/css
-    "text/plain;charset=utf-8" text/plain;
-
-  server_tokens   off;
-
-  log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
-  access_log  <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
-  error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
-
-
-  include mime.types;
-  default_type application/octet-stream;
-  sendfile        on;
-
-  # Must read the body in 5 seconds.
-  client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+  [...]
 
   upstream app_server {
-    #server unix:/tmp/nginx.socket;
-    server godwd-api.herokuapp.com fail_timeout=0;
+    server unix:/tmp/nginx.socket fail_timeout=0;
  	}
 
   server {
-
     listen <%= ENV['PORT']%> ;
-    server_name godwd-api.herokuapp.com;
-
-    keepalive_timeout 5;
-    client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
+    [...]
 
     location / {
-  	  rewrite               ^/?(.*) /$1 break;
-      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header      Host $host;
-      proxy_redirect        off;
-      proxy_pass            http://localhost:8080
-      #http://app_server/;
+      [...]
+      proxy_pass            http://app_server;
     }
 
     try_files $uri @app_server;
 
-    <%# location @app_server {
-      proxy_pass http://app_server;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header Host $http_host;
-      proxy_redirect off;
-    } %>
-
-    location /favicon.ico {
-      log_not_found off;
-    }
   }
 }
 
 ```
 
-> mode 'localhost:development'
+### Mode unix socket
 
-- add to `/config/development.rb`: `config.hosts << "app_server"``
-- create `nginx.conf.erb` in the nginx folder:
+```ruby
+bind "unix:///tmp/nginx.socket"
+```
 
 ```
 #/usr/local/etc/nginx/nginx.conf
 
-worker_processes  1;
-
-events {
-    worker_connections  1024;
-}
-
 
 http {
-    include       mime.types;
-    default_type  application/octet-stream;
-    sendfile        on;
-    keepalive_timeout  65;
+    [...]
 
     upstream app_server {
-      # server 127.0.0.1:3001;
       server unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket fail_timeout=0;
     }
 
     gzip  on;
 
     server {
-      listen       8080;
-      server_name  _;
+      # Heroku will set the port for Nginx
+      listen <%= ENV['PORT']%>;
 
       location / {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host $http_host;
-        proxy_redirect off;
-        proxy_pass http://app_server;
+        [...]
+        proxy_pass http://localhost:3001; # same port as Puma
       }
-
-      error_page   500 502 503 504  /50x.html;
-      location = /50x.html {
-          root   html;
-      }
-    }
-    include servers/*;
 }
 ```
 
