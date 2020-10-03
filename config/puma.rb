@@ -18,9 +18,9 @@ preload_app!
 rackup      DefaultRackup
 
 # bind "unix:///tmp/nginx.socket" # version unix socket
-on_worker_fork do
-	FileUtils.touch('/tmp/app-initialized')
-end
+# on_worker_fork do
+# 	FileUtils.touch('/tmp/app-initialized')
+# end
 
 on_worker_boot do
     ActiveRecord::Base.establish_connection
