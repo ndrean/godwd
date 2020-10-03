@@ -54,7 +54,7 @@ http {
       proxy_set_header      X-Real-IP $remote_addr;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            http://127.0.0.1:<%=ENV['PORT']%>";
+      proxy_pass            http://127.0.0.0:<%=ENV['PORT']%>";
       #http://app_server/;
     }
 
