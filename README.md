@@ -607,43 +607,122 @@ My app is located at `my-app.herokuapp.com` and I name-spaced my endpoints with 
 
 - I use the buildpack `$ heroku buildpacks:add heroku-community/nginx`,
 - added a file `/app/config/nginx.config.erb` and used the directive `rewrite` for URI starting with '/api',
-- added a `Procfile`is `web: bin/start-nginx-solo bundle exec puma --config config/puma.rb`.
+- added a `Procfile`is `web: bin/start-nginx bundle exec puma --config config/puma.rb`.
 
 ```ruby
 #/app/config.puma.rb
-port ENV['PORT']
+# https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server
+
+require 'fileutils'
+
+# puma in single mode => set wrokers to 'O'
+workers     ENV.fetch('WEB_CONCURRENCY') {2}
+threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
+threads threads_count, threads_count
+
+# can't put port for tcp socket & unix socket
+# port        ENV['PORT']
+environment ENV.fetch("RAILS_ENV") { "development" }
 preload_app!
 rackup      DefaultRackup
+
+bind "unix:///tmp/nginx.socket"
+# before_fork do |server,worker|
+on_worker_fork do
+	FileUtils.touch('/tmp/app-initialized')
+end
+
+on_worker_boot do
+    ActiveRecord::Base.establish_connection
+end
+
+plugin :tmp_restart
+
+on_restart do
+    Sidekiq.redis.shutdown { |conn| conn.close }
+end
 ```
 
 ```
 #/app/config/nginx.config.erb
 daemon off;
+
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+  use epoll;
+  accept_mutex on;
+  worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+error_log stderr;
+
 http {
+  gzip on;
+  gzip_comp_level 2;
+  gzip_min_length 512;
+  gzip_types
+    "application/json;charset=utf-8" application/json
+    "application/javascript;charset=utf-8" application/javascript text/javascript
+    "application/xml;charset=utf-8" application/xml text/xml
+    "text/css;charset=utf-8" text/css
+    "text/plain;charset=utf-8" text/plain;
+
+  server_tokens   off;
+
+  log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+  access_log  <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
+  error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+
+
+  include mime.types;
+  default_type application/octet-stream;
+  sendfile        on;
+
+  # Must read the body in 5 seconds.
+  client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+
   upstream app_server {
-    server my-app.herokuapp.com;
-  }
+    server unix:/tmp/nginx.socket;
+    #server godwd-api.herokuapp.com fail_timeout=0;
+ 	}
 
   server {
-    listen <%= ENV['PORT']%>;
+    listen <%= ENV['PORT']%> ;
+    server_name _;
 
-    # for every uri starting with api do:
-    location /api {
-      rewrite    ^/api/?(.*) /$1 break;
+    keepalive_timeout 5;
+    client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
+
+    location / {
+  	  rewrite               ^/?(.*) /$1 break;
+      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header      Host $host;
+      proxy_redirect        off;
+      proxy_pass            http://app_server/;
+    }
+
+    try_files $uri @app_server;
+
+    <%# location @app_server {
       proxy_pass http://app_server;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header Host $http_host;
       proxy_redirect off;
+    } %>
+
+    location /favicon.ico {
+      log_not_found off;
     }
   }
 }
+
 ```
 
-This works. Surprisingly, in the response, I see the server `Cowboy` and not `nginx` so I wonder if this works.
+> mode 'localhost:development'
 
 - add to `/config/development.rb`: `config.hosts << "app_server"``
-
-- create `nginx.conf` in the nginx folder:
+- create `nginx.conf.erb` in the nginx folder:
 
 ```
 #/usr/local/etc/nginx/nginx.conf
