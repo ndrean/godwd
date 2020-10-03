@@ -565,9 +565,7 @@ They are 2 ways to let Puma and Nginx communicate: with unix sockets and tcp/ip 
 bind "unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket"
 preload_app!
 rackup      DefaultRackup
-on_worker_fork do
-	FileUtils.touch('/tmp/app-initialized')
-end
+
 
 on_worker_boot do
     ActiveRecord::Base.establish_connection
@@ -643,6 +641,7 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 preload_app!
 rackup      DefaultRackup
 
+# Heroku buildpack needs this file to initialize
 on_worker_fork do
 	FileUtils.touch('/tmp/app-initialized')
 end
@@ -670,17 +669,18 @@ events {
 http {
   [...]
 
-  upstream app_server {
-    server unix:/tmp/nginx.socket fail_timeout=0;
- 	}
+  # upstream app_server {
+  #  server godwd-api.herokuapp.com fail_timeout=0;
+ 	#}
 
   server {
     listen <%= ENV['PORT']%> ;
+    server_name godwd-api.herokuapp.com;
     [...]
 
     location / {
       [...]
-      proxy_pass            http://app_server;
+      proxy_pass  http://127.0.0.1:3001;
     }
 
     try_files $uri @app_server;
@@ -704,7 +704,7 @@ http {
     [...]
 
     upstream app_server {
-      server unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket fail_timeout=0;
+      server unix:///tmp/nginx.socket fail_timeout=0;
     }
 
     gzip  on;
@@ -715,7 +715,7 @@ http {
 
       location / {
         [...]
-        proxy_pass http://localhost:3001; # same port as Puma
+        proxy_pass http://app_server; # same port as Puma
       }
 }
 ```
