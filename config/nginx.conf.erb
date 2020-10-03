@@ -41,7 +41,7 @@ http {
  	}
 
   server {
-    listen <%= ENV['PORT']%>;  # nginx listen on this port (set by Heroku)
+    listen 8080;#<%#= ENV['PORT']%>;  # nginx listen on this port (set by Heroku)
     
     server_name godwd-api.herokuapp.com; # which domain we are listening for
 
@@ -54,7 +54,7 @@ http {
       proxy_set_header      X-Real-IP $remote_addr;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            http://localhost:<%= ENV['PORT']%>;
+      proxy_pass            http://localhost:8080; #<%#= ENV['PORT']%>;
       #http://app_server;
     }
 
