@@ -54,7 +54,7 @@ http {
       proxy_set_header      X-Real-IP $remote_addr;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            "godwd-api.heroku.com:<%=ENV['PORT']%>";
+      proxy_pass            "https://godwd-api.heroku.com:<%=ENV['PORT']%>";
       #http://app_server/;
     }
 
