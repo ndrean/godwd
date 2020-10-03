@@ -41,7 +41,7 @@ http {
  	}
 
   server {
-    listen 8080; #<%#= ENV['PORT']%>  # nginx listen on this port (set by Heroku)
+    listen <%= ENV['PORT']%>  # nginx listen on this port (set by Heroku)
     
     #server_name godwd-api.herokuapp.com; # which domain we are listening for
 
