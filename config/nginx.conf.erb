@@ -43,7 +43,7 @@ http {
   server {
     listen 8080;#<%#= ENV['PORT']%>;  # nginx listen on this port (set by Heroku)
     
-    server_name godwd-api.herokuapp.com; # which domain we are listening for
+    #server_name godwd-api.herokuapp.com; # which domain we are listening for
 
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
@@ -54,7 +54,8 @@ http {
       proxy_set_header      X-Real-IP $remote_addr;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            http://localhost:8080; #<%#= ENV['PORT']%>;
+      proxy_pass            http://app_server;
+      #http://localhost:8080; #<%#= ENV['PORT']%>;
       #http://app_server;
     }
 
