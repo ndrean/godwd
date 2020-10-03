@@ -13,8 +13,12 @@ error_log stderr;
 http {
   gzip              on;
   gzip_comp_level   6;
-  gzip_min_length   1024;
+  gzip_min_length   512;
   gzip_static       on;
+
+  # by default nginx does not compress responses to proxied req (the 'via')
+  gzip_proxied      no-cache no-store private expired auth;
+  
   gzip_types
     "application/json;charset=utf-8" application/json
     "application/javascript;charset=utf-8" application/javascript text/javascript
