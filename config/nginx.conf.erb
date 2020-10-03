@@ -36,12 +36,13 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-    #server unix:/tmp/nginx.socket fail_timeout=0;
-    server godwd-api.heroku.com;
+    server unix:/tmp/nginx.socket fail_timeout=0;
+    #server godwd-api.heroku.com;
  	}
 
   server {
-    listen 3001; #<%#= ENV['PORT']%>;  # nginx listen on this port (set by Heroku)
+    listen <% ENV['PORT']%>;  # 3001 
+    #nginx listen on this port (set by Heroku)
     
     server_name godwd-api.herokuapp.com; # which domain we are listening for
 
