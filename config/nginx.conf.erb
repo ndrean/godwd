@@ -29,7 +29,7 @@ http {
 
 
   include mime.types;
-  default_type application/octet-stream;
+  default_type    application/octet-stream;
   sendfile        on;
 
   # Must read the body in 5 seconds.
@@ -40,7 +40,7 @@ http {
  	}
 
   server {
-    listen <%= ENV['PORT']%> ;
+    listen 8080 #<%= ENV['PORT']%> ; # Heroku will set the port
     server_name godwd-api.herokuapp.com;
 
     keepalive_timeout 5;
@@ -49,9 +49,11 @@ http {
     location / {
   	  rewrite               ^/?(.*) /$1 break;
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header      X-Real-IP $remote_addr;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            http://app_server/;
+      proxy_pass            http://127.0.0.1:<% ENV['PORT']%>
+      #http://app_server/;
     }
 
     try_files $uri @app_server;
