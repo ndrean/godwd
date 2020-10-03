@@ -11,9 +11,10 @@ events {
 error_log stderr;
 
 http {
-  gzip on;
-  gzip_comp_level 2;
-  gzip_min_length 512;
+  gzip              on;
+  gzip_comp_level   6;
+  gzip_min_length   1024;
+  gzip_static       on;
   gzip_types
     "application/json;charset=utf-8" application/json
     "application/javascript;charset=utf-8" application/javascript text/javascript
@@ -21,7 +22,7 @@ http {
     "text/css;charset=utf-8" text/css
     "text/plain;charset=utf-8" text/plain;
 
-  server_tokens   off;
+  server_tokens     off;
 
   log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
   access_log  <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
