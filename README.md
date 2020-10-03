@@ -683,14 +683,14 @@ http {
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
   upstream app_server {
-    server unix:/tmp/nginx.socket;
-    #server godwd-api.herokuapp.com fail_timeout=0;
+    #server unix:/tmp/nginx.socket;
+    server godwd-api.herokuapp.com fail_timeout=0;
  	}
 
   server {
 
     listen <%= ENV['PORT']%> ;
-    #server_name _;
+    server_name godwd-api.herokuapp.com;
 
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
@@ -700,7 +700,8 @@ http {
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            http://app_server/;
+      proxy_pass            http://localhost:8080
+      #http://app_server/;
     }
 
     try_files $uri @app_server;
@@ -767,5 +768,7 @@ http {
     include servers/*;
 }
 ```
+
+> check nginx with `ps aux | grep nginx``
 
 mauris_tovar mariana
