@@ -40,7 +40,7 @@ http {
  	}
 
   server {
-    listen 8080 #<%= ENV['PORT']%> ; # Heroku will set the port
+    listen 8080; #<%#= ENV['PORT']%>  # Heroku will set the port
     server_name godwd-api.herokuapp.com;
 
     keepalive_timeout 5;
