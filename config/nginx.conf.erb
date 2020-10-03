@@ -54,7 +54,7 @@ http {
       proxy_set_header      X-Real-IP $remote_addr;
       proxy_set_header      Host $host;
       proxy_redirect        off;
-      proxy_pass            http://localhost:3001; # config unix/socket
+      #proxy_pass            http://localhost:3001; # config unix/socket
       proxy_pass            http://app_server; # config tcp/ip
     }
 
