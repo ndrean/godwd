@@ -659,16 +659,9 @@ end
 ```
 #/app/config/nginx.config.erb
 daemon off;
-# nb of cores per dyno is 4
-worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
-
-events {
-  [...]
-}
-
+[...]
 http {
   [...]
-
   # upstream app_server {
   #  server godwd-api.herokuapp.com fail_timeout=0;
  	#}
@@ -677,14 +670,10 @@ http {
     listen <%= ENV['PORT']%> ;
     server_name godwd-api.herokuapp.com;
     [...]
-
     location / {
       [...]
       proxy_pass  http://127.0.0.1:3001;
     }
-
-    try_files $uri @app_server;
-
   }
 }
 
@@ -693,26 +682,24 @@ http {
 ### Mode unix socket
 
 ```ruby
+[...]
+!! <%# port 3001 %>
 bind "unix:///tmp/nginx.socket"
 ```
 
 ```
 #/usr/local/etc/nginx/nginx.conf
-
-
+[...]
 http {
     [...]
-
     upstream app_server {
       server unix:///tmp/nginx.socket fail_timeout=0;
     }
-
-    gzip  on;
-
+    [...]
     server {
       # Heroku will set the port for Nginx
       listen <%= ENV['PORT']%>;
-
+      [...]
       location / {
         [...]
         proxy_pass http://app_server; # same port as Puma
