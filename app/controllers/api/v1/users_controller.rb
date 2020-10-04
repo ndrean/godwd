@@ -108,7 +108,7 @@ class Api::V1::UsersController < ApplicationController
      end
   end
 
-  # GET 'api/v1//users/:id'
+  # GET 'api/v1/users/:id'
   def show
     user = User.find(params[:id])
     render json: user

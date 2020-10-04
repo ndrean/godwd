@@ -1,5 +1,8 @@
 class Api::V1::EventsController < ApplicationController
   
+  before_action :event_params, only: 
+    [:create, :update]
+
   before_action :authenticate_user, only: 
     [:create, :update, :destroy, :receive_demand ]
 
@@ -41,15 +44,15 @@ class Api::V1::EventsController < ApplicationController
 
   # POST '/api/v1/events'
   def create   
-    #params.permit!
-    event_params = params.require(:event).permit( 
-        :user,
-        :directCLurl,
-        :publicID,
-        :comment,
-        itinary_attributes: [:date, :start, :end, :distance, start_gps: [], end_gps: []],
-        participants: [:email, :notif, :id, :ptoken],
-      ) 
+    #params.permit! private method before_action
+    # event_params = params.require(:event).permit( 
+    #     :user,
+    #     :directCLurl,
+    #     :publicID,
+    #     :comment,
+    #     itinary_attributes: [:date, :start, :end, :distance, start_gps: [], end_gps: []],
+    #     participants: [:email, :notif, :id, :ptoken],
+    #   ) 
     # !! permitting an array must be at the end !!
     
     event = Event.new(event_params)
@@ -97,15 +100,15 @@ class Api::V1::EventsController < ApplicationController
       RemoveDirectLink.perform_async(event.publicID) # with Sidekiq, not ActiveJob
     end
     
-    #params.permit!
-    event_params = params.require(:event).permit( 
-        :user,
-        :directCLurl,
-        :publicID,
-        :comment,
-        itinary_attributes: [:date, :start, :end, :distance, start_gps: [], end_gps: []],
-        participants: [:email, :notif, :id, :ptoken],
-      ) 
+    #params.permit! private method before_action
+    # event_params = params.require(:event).permit( 
+    #     :user,
+    #     :directCLurl,
+    #     :publicID,
+    #     :comment,
+    #     itinary_attributes: [:date, :start, :end, :distance, start_gps: [], end_gps: []],
+    #     participants: [:email, :notif, :id, :ptoken],
+    #   ) 
       
     if event.update(event_params)
       if event.participants
