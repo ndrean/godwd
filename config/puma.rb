@@ -1,4 +1,4 @@
-# https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server
+#### version tcp/ip ####
 
 require 'fileutils'
 
@@ -8,27 +8,33 @@ workers     ENV.fetch('WEB_CONCURRENCY') {2}
 threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
 threads threads_count, threads_count
 
-port        3001 # version tcp/ip
+port        3001 
 
+# value overwritten by Heroku
 environment ENV.fetch("RAILS_ENV") { "development" } 
+
+daemonize if ENV["RAILS_ENV"] == 'production'
 
 preload_app!
 
-# Heroku
 rackup      DefaultRackup
 
-# bind "unix:///tmp/nginx.socket" # version unix socket
-on_worker_fork do
-	FileUtils.touch('/tmp/app-initialized')
-end
+on_worker_fork { FileUtils.touch('/tmp/app-initialized') }
+	
 
+# 2 workers => cluster mode
+# The code in the `on_worker_boot` will be called if you are using
+# clustered mode by specifying a number of `workers`. After each worker
+# process is booted, this block will be run. If you are using the `preload_app!`
+# option, you will want to use this block to reconnect to any threads
+# or connections that may have been created at application boot, as Ruby
+# cannot share connections between processes.
 on_worker_boot do
     ActiveRecord::Base.establish_connection
 end
 
-# Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
 
 on_restart do
-    Sidekiq.redis.shutdown { |conn| conn.close }
+    Sidekiq.redis.shutdown(&:close) #{ |conn| conn.close }
 end

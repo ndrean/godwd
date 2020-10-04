@@ -1,0 +1,68 @@
+version: "3.8" # docker: 19.03
+# volumes:
+#   redis:
+#   postgres:
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: godwd_development
+    # environment:
+    #   - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  web:
+    build: .
+    # command: "bundle exec puma -C config/puma.rb"
+    command: "bundle exec rails s -p 3001 -b '0.0.0.0'"
+    volumes:
+      - .:/myapp
+    environment:
+      - RAILS_ENV=development
+      - REDIS_URL=redis://redis:6379/1
+      - POSTGRES_PASSWORD=postgres
+      - ENABLE_BOOTSNAP=true
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+      - redis
+    env_file: .env
+
+  # nginx:
+  #   image: nginx
+  #   volumes:
+  #     - ./nginx.devel.conf:/etc/nginx/conf.d/default.conf
+  #   ports:
+  #     - 80:80
+  #   depends_on:
+  #     - web
+
+  redis:
+    image: redis
+    command: redis-server
+    environment:
+      REDIS_URL: redis://redis:6379/1
+    volumes:
+      - ./tmp/redis:/data
+
+  sidekiq:
+    build: .
+    command: "bundle exec sidekiq -C config/sidekiq.yml"
+    volumes:
+      - .:/myapp
+    environment:
+      - RAILS_ENV=development
+      - REDIS_URL=redis://redis:6379/1
+      - ENABLE_BOOTSNAP=true
+    depends_on:
+      - redis
+      - db
+
+    env_file: .env

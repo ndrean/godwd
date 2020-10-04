@@ -6,7 +6,7 @@ default: &default
   username: <%= ENV['POSTGRES_USER'] %>
   password: <%= ENV['POSTGRES_PASSWORD'] %>
   # host: localhost # Rails default, used by Foreman
-  # host: db # !!! for Docker !!!
+  host: db # !!! for Docker !!!
 
 development:
   <<: *default
@@ -18,7 +18,7 @@ production:
   database: godwd_production
 
   # Heroku
-  url: <%= ENV['DATABASE_URL'] %>
+  # url: <%= ENV['DATABASE_URL'] %>
   # CleverCloud
   # url: <%= ENV['POSTGRESQL_ADDON_URI'] %>
   #   DATABASE_URL="postgres://myuser:mypass@localhost/somedatabase"

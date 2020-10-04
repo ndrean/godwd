@@ -143,7 +143,7 @@ This will be a separate process for the process launcher `Foreman`:
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
 ```
 
-# Mail background jons
+# Mail background jobs
 
 - gem 'mailgun-ruby` is usefull to get the info that a mail has been sent.
   <https://github.com/mailgun/mailgun-ruby>
@@ -291,6 +291,8 @@ redis: redis-server --port 6379
 
 # Procfile & Foreman
 
+foreman start -f ProcfileIwant
+
 > Dev localhost mode:
 
 ```
@@ -317,12 +319,17 @@ The `DATABASE_URL` wil be set by Heroku.
 
 # Compression
 
-<https://pawelurbanek.com/rails-gzip-brotli-compression>
+We use directly gzip or Brotli compression with Rails. For Brotli, use the gem `rack-brotli` and set:
 
 ```ruby
 #/config.application.rb
   config.middleware.use Rack::Deflater
+  config.middleware.use Rack::Brotli
 ```
+
+<https://pawelurbanek.com/rails-gzip-brotli-compression>
+
+Since we use `Nginx`, we will use the inbuild gzip service to we delegate the data compression to nginx.
 
 # Arrays in PostgreSQL
 
@@ -551,7 +558,9 @@ sendfile on;
 
 # Must read the body in 5 seconds.
 
-# NGINX localhost
+# NGINX: reverse proxy
+
+The main reason to set up Nginx as reverse proxy (client > Nginx > Puma/Rails) is to run your API server on a different network or IP then your front-end application is on. You can then secure this network and only allow traffic from the reverse proxy server.
 
 ## localhost settings:
 
