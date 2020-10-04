@@ -29,7 +29,7 @@ module Godwd
 
     # config.middleware.insert_after ActionDispatch::Static, Rack::Brotli
     # config.middleware.use Rack::Deflater
-    config.middleware.use Rack::Brotli
+    # config.middleware.use Rack::Brotli
 
     config.active_record.schema_format :ruby
     # Settings in config/environments/* take precedence over those specified here.
