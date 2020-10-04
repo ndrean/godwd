@@ -26,11 +26,6 @@ http {
     "text/css;charset=utf-8" text/css
     "text/plain;charset=utf-8" text/plain;
 
-  brotli on;
-    brotli_static on;
-    brotli_min_length 512;
-    
-    brotli_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/vnd.ms-fontobject application/x-font-ttf font/opentype image/svg+xml image/x-icon;
   server_tokens     off;
 
   log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
