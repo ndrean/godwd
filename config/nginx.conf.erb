@@ -42,8 +42,8 @@ http {
 
   # version unix socket
   upstream app_server {
-    #server unix:/tmp/nginx.socket fail_timeout=0; 
-    server 127.0.0.1:3001 fail_timeout=0;
+    server unix:/tmp/nginx.socket fail_timeout=0; 
+    #server 127.0.0.1:3001 fail_timeout=0;
  	} 
 
   server {
