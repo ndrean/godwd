@@ -1,3 +1,0 @@
-
-web: bundle exec puma --config config/puma_socket.rb
-worker: bundle exec sidekiq -C config/sidekiq.yml

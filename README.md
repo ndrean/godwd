@@ -361,6 +361,23 @@ The `database.yml` musn't use the key `db` (or set `localhost`)
 
 # Docker
 
+<https://stackoverflow.com/questions/54383233/how-to-dockerize-a-rails-application-with-mysql-nginx-and-cron-tasks>
+
+```
+- app
+  - config
+     database.yml
+     puma.rb
+  - docker
+    - app
+      Dockerfile
+    - web
+      Dockerfile
+      nginx.conf
+  docker-compose.yml
+  .dockerignore
+```
+
 - need to add `host: db` in `database.yml` in lieu of `host: localhost` when working with localhost & foreman
 
 - sequence `docker build .`, then `docker-compose up` one by one, `db`, then `sidekiq`, then `web`(otherwise you get an error due to `Bootsnap`).
@@ -385,10 +402,6 @@ docker-compose exec web rake db:seeds
 ```
 
 Set the key `host: db` in `database.yml` where `db` is the name of the Postgresql service in `docker-compose.yml`.
-
-```ruby
-
-```
 
 <https://nickjanetakis.com/blog/dockerize-a-rails-5-postgres-redis-sidekiq-action-cable-app-with-docker-compose>
 
@@ -424,15 +437,15 @@ POTGRES_PASSWORD=postgres
 - create the database
 
 ```bash
-docker-compose exec web rails db:create
-docker-compse exec web rails db:schema:load # instead of db:migrate
-docker-compose exec web rails db:seed
+docker-compose exec app rails db:create
+docker-compse exec app rails db:schema:load # instead of db:migrate
+docker-compose exec app rails db:seed
 ```
 
 - connect from local machine to a PSQL db in Docker:
   <https://medium.com/better-programming/connect-from-local-machine-to-postgresql-docker-container-f785f00461a7>
 
-## docker commands
+## Docker commands
 
 - list all containers: `docker container ls -a`
 
@@ -463,7 +476,7 @@ token = JWT.encode(payload, secret, 'HS256')
 
 but we use the gem `Knock`
 
-# NGINX - HEROKU - Buildpack
+# Heroku Nginx buildpack
 
 <https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nginx>
 
@@ -475,88 +488,50 @@ First:
 
 - copy the `nginx.config.erb` in the '/config' folder.
 
-- update the `puma.rb` code to make it listen to nginx socket
+- update the `puma.rb` code
 
-- modify Procfile: `bin/start-nginx-solo bundle exec puma -C ./config/puma.rb`
+- Procfile: `bin/start-nginx bundle exec puma -C ./config/puma.rb`
 
-# Procfile
+## Procfile
 
 ```bash
 foreman start -f Procfile.dev
-# web:  bin/start-nginx-solo bundle exec puma -C ./config/puma.rb
-web: bundle exec puma -t 5:5 -p ${PORT:-3001} -e ${RACK_ENV:-development}
+```
+
+```
+#/Procfile (for Heroku)
+web:  bin/start-nginx bundle exec puma -C ./config/puma.rb
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
-redis: redis-server --port 6379
+
 ```
 
 # Old files
 
-# class RegisterJob < ApplicationJob
+```ruby
+class RegisterJob < ApplicationJob
+  queue_as :mailers
+  def perform(fb_user_email, fb_user_confirm_token)
+    UserMailer.register(fb_user_email, fb_user_confirm_token).deliver
+  end
+end
+```
 
-# queue_as :mailers
+- version with ActiveJob : use "RemoveDirectLink.perform_later" in controller
 
-# def perform(fb_user_email, fb_user_confirm_token)
-
-# UserMailer.register(fb_user_email, fb_user_confirm_token).deliver
-
-# end
-
-# end
-
-# version with ActiveJob : use "RemoveDirectLink.perform_later" in controller
-
-# class RemoveDirectLink < ApplicationJob
-
-# queue_as :default
-
-# def perform(event_publicID)
-
-# auth = {
-
-# cloud_name: Rails.application.credentials.CL[:CLOUD_NAME],
-
-# api_key: Rails.application.credentials.CL[:API_KEY],
-
-# api_secret: Rails.application.credentials.CL[:API_SECRET]
-
-# }
-
-# return if !event_publicID
-
-# Cloudinary::Uploader.destroy(event_publicID, auth)
-
-# end
-
-# end
-
-daemon off;
-
-# Heroku dynos have at least 4 cores.
-
-worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
-
-events {
-use epoll;
-accept_mutex on;
-worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
-}
-
-http {
-gzip on;
-gzip_comp_level 2;
-gzip_min_length 512;
-
-server_tokens off;
-
-log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
-access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
-error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
-
-include mime.types;
-default_type application/octet-stream;
-sendfile on;
-
-# Must read the body in 5 seconds.
+```ruby
+class RemoveDirectLink < ApplicationJob
+  queue_as :default
+  def perform(event_publicID)
+    auth = {
+      cloud_name: Rails.application.credentials.CL[:CLOUD_NAME],
+      api_key: Rails.application.credentials.CL[:API_KEY],
+      api_secret: Rails.application.credentials.CL[:API_SECRET]
+    }
+    return if !event_publicID
+    Cloudinary::Uploader.destroy(event_publicID, auth)
+  end
+end
+```
 
 # NGINX: reverse proxy
 
@@ -574,11 +549,8 @@ They are 2 ways to let Puma and Nginx communicate: with unix sockets and tcp/ip 
 bind "unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket"
 preload_app!
 rackup      DefaultRackup
+on_worker_boot { ActiveRecord::Base.establish_connection }
 
-
-on_worker_boot do
-    ActiveRecord::Base.establish_connection
-end
 
 #/usr/local/etc/nginx/nginx.conf
 http {
@@ -598,7 +570,7 @@ http {
 }
 ```
 
-- tcp. I need to specify the port (for some reason, I need to pass `127.0.0.1:3001` and not `0.0.0.:3001`):
+- tcp. (`127.0.0.1:3001` and not `0.0.0.:3001`):
 
 ```
 #/app/config/puma.rb
@@ -611,7 +583,7 @@ http {
     server 127.0.0.1:3001 fail_timeout=0;
   }
   server {
-    listen          8080;
+    listen          8000;
 
     location / {
       proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -632,37 +604,25 @@ My app is located at `my-app.herokuapp.com` and I name-spaced my endpoints with 
 
 - buildpack : `$ heroku buildpacks:add heroku-community/nginx`,
 - add to `Procfile`: `web: bin/start-nginx bundle exec puma --config config/puma.rb`
-- add a file `/app/config/nginx.config.erb` using the biolerplate given by Heroku.
+- add the file `/app/config/nginx.config.erb` using the biolerplate given by Heroku
 
-### Mode tcp/ip
+> Mode tcp/ip
 
 ```ruby
-require 'fileutils'
-
 # puma in single mode => set workers to 'O'
 workers     ENV.fetch('WEB_CONCURRENCY') {2}
 threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
 threads threads_count, threads_count
 
-# can't put port for tcp socket & unix socket
 port        3001
-environment ENV.fetch("RAILS_ENV") { "development" }
 preload_app!
 rackup      DefaultRackup
 
 # Heroku buildpack needs this file to initialize
-on_worker_fork do
-	FileUtils.touch('/tmp/app-initialized')
-end
-
-on_worker_boot do
-    ActiveRecord::Base.establish_connection
-end
-
+on_worker_fork { FileUtils.touch('/tmp/app-initialized') }
+on_worker_boot { ActiveRecord::Base.establish_connection }
 plugin :tmp_restart
-on_restart do
-    Sidekiq.redis.shutdown { |conn| conn.close }
-end
+on_restart { Sidekiq.redis.shutdown(&:close) }
 ```
 
 ```
@@ -671,29 +631,37 @@ daemon off;
 [...]
 http {
   [...]
-  # upstream app_server {
-  #  server godwd-api.herokuapp.com fail_timeout=0;
- 	#}
+  upstream app_server {
+    server server 127.0.0.1:3001 fail_timeout=0;
+ 	}
 
   server {
-    listen <%= ENV['PORT']%> ;
-    server_name godwd-api.herokuapp.com;
+    listen <%= ENV['PORT'] %>;
     [...]
+
     location / {
-      [...]
-      proxy_pass  http://127.0.0.1:3001;
+      try_files $uri @rails;
+    }
+
+    location / {
+      proxy_set_header  X-Real-IP  $remote_addr;
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://app_server;
     }
   }
 }
-
 ```
 
-### Mode unix socket
+## Nginx local mode
 
 ```ruby
+#/config/puma.rb
 [...]
-!! <%# port 3001 %>
-bind "unix:///tmp/nginx.socket"
+port 3001  # mode tcp
+bind "unix:///tmp/nginx.socket" # mode unix socket
+[...]
 ```
 
 ```
@@ -702,12 +670,15 @@ bind "unix:///tmp/nginx.socket"
 http {
     [...]
     upstream app_server {
-      server unix:///tmp/nginx.socket fail_timeout=0;
+      # mode tcp
+      server          localhost:3001 fail_timeout=0;
+      # mode unix
+      # server unix:///Users/utilisateur/code/rails/godwd/tmp/sockets/nginx.socket fail_timeout=0;
     }
     [...]
     server {
-      # Heroku will set the port for Nginx
-      listen <%= ENV['PORT']%>;
+
+      listen 8080;
       [...]
       location / {
         [...]
@@ -715,6 +686,12 @@ http {
       }
 }
 ```
+
+To use tcp connection between Nginx and Puma, use `foreman start -f Procfile_nginx_port`; it calls 'config.puma_port.rb'.
+
+For unix socket connection, use `foreman start -f Procfile_nginx_socket` (calls 'config/puma_socket.rb')
+
+Navigate to http://localhost:8080/... and you should see 'server: nginx'
 
 > check nginx with `ps aux | grep nginx``
 

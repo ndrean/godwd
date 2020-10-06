@@ -1,0 +1,4 @@
+# local setup with unix : foreman start -f Procfile_nginx_socket
+
+web: bundle exec puma --config config/puma_socket.rb
+#worker: bundle exec sidekiq -C config/sidekiq.yml

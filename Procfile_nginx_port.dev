@@ -1,3 +1,0 @@
-web: bundle exec puma p 3001 --config config/puma_port.rb
-worker: bundle exec sidekiq -C config/sidekiq.yml
-
