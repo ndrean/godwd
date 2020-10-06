@@ -1,30 +1,28 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= ENV['POsTGRES_USER'] %>
-  password: <%= ENV['POSTGRES_PASSWORD'] %>
+  username: <%= ENV.fetch('POSTGRES_USER') %>
+  password: <%= ENV.fetch('POSTGRES_PASSWORD') %>
+  database: <%= ENV.fetch('POSTGRES_DB') %>
 
   # Rails default, used by Foreman
-  host: localhost
+  # host: localhost
 
   # !!! for Docker  do ...!!!
-  # host: db
+  host: db
 
 development:
   <<: *default
-  database: godwd_development
-  url: <%= ENV['DATABASE_URL'] %>
 
 production:
   <<: *default
-  database: godwd_production
-  # url: <%= ENV['DATABASE_URL'] %>
+  url: <%= ENV['DATABASE_URL'] %> # Heroku
+
+
   # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
   # url: "postgresql://postgres:postgres@localhost:5432/godwd_development"
   #
-  #### Heroku
-  # url: <%= ENV['DATABASE_URL'] %>
+
   #### CleverCloud
   # url: <%= ENV['POSTGRESQL_ADDON_URI'] %>

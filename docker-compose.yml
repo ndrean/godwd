@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   redis:
-    image: redis
+    image: redis:6.0.8-alpine
     command: redis-server
     environment:
       REDIS_URL: redis://redis:6379/1
@@ -10,7 +10,7 @@ services:
       - ./tmp/redis:/data # linking
 
   db:
-    image: postgres
+    image: postgres:12.4-alpine
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -22,7 +22,7 @@ services:
       # since we don't want this data to be stored in a container inner folder because if so it won't be persistent among container restarts
     ports:
       - 5432:5432
-    env_file: .env
+    # env_file: .env
 
   sidekiq:
     build:
@@ -49,21 +49,20 @@ services:
         RAILS_ENV: $RAILS_ENV
     volumes:
       - .:/var/www/myapp
-      # linking inner folder /var/www/myapp to the Root . of the app
+    # linking inner folder /var/www/myapp to the Root . of the app
     restart: always
     depends_on:
       - db
       - redis
     # command: "bundle exec puma -C config/puma.rb" => entrypoint.sh
     environment:
-      - RAILS_ENV=$RAILS_ENV
+      - RAILS_ENV=development
       - REDIS_URL=redis://redis:6379/1
-      - POSTGRES_PASSWORD=postgres
       - ENABLE_BOOTSNAP=true
-      # - DATABASE_URL=$DATABASE_URL
+      - POSTGRES_PASSWORD=postgres
     ports:
       - "3001:3001"
-    env_file: .env
+    # env_file: .env
 
   web:
     build:

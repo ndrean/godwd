@@ -1,5 +1,9 @@
 # Details
 
+The Rails api can be run with `rails server` and navigate to `localhost:3001/api/v1/events`.
+You can run `foreman start -f Procfile_nginx_port.rb` and navigate to `localhost:8000/api/v1/events`: it is reverse-proxied with Nginx.
+You can run `docker-compose up` and navigate to `localhost:8080/api/v1/events`: the Docker container exposes 8080 > 80 and Rails via 3001:3001.
+
 This Rails back end uses:
 
 - Postgres as database,
@@ -235,6 +239,10 @@ React will run on '3000' and Rails will run on port '3001'
 # /config/puma.rb
 port        ENV.fetch("PORT") { 3001 }
 ```
+
+# Bootsnap issue
+
+<https://github.com/Shopify/bootsnap/issues/262>
 
 # CORS
 
@@ -696,3 +704,9 @@ Navigate to http://localhost:8080/... and you should see 'server: nginx'
 > check nginx with `ps aux | grep nginx``
 
 mauris_tovar mariana
+
+# Kill
+
+'<PID>' = `lsof -i :5432` to see how is running at 5432, then `kill -9 <PID>`, or `kill -9 $(lsof -i :5432)`.
+
+- `which psql` and `pg_isready`
