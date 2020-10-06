@@ -18,7 +18,7 @@ preload_app! ##
 
 # rackup      DefaultRackup ##
 
-# on_worker_fork { FileUtils.touch('/tmp/app-initialized') } ##
+on_worker_fork { FileUtils.touch('/tmp/app-initialized') } ##
 	
 
 # 2 workers => cluster mode
