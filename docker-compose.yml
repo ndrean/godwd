@@ -77,3 +77,4 @@ services:
       - 8080:80 # linking inner port 80 to outer port 8080
     depends_on:
       - app
+  

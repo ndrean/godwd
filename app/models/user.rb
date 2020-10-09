@@ -8,7 +8,11 @@ class User < ApplicationRecord
 
     validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
 
-    # def auth_params
-    #     params.require(:auth).permit( :access_token, :email, :password_digest, :access_token)
-    # end
+    # modify token payload to accept uid given by Facebook
+    def to_token_payload
+        return { 
+            sub: uid,
+            email: email
+         }
+    end
 end

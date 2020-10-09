@@ -455,6 +455,8 @@ docker-compose exec app rails db:seed
 
 ## Docker commands
 
+<https://thoughtbot.com/upcase/videos/intro-to-docker >
+
 - list all containers: `docker container ls -a`
 
 - list all containers's ids: `docker container ls -aq`
@@ -465,6 +467,8 @@ docker-compose exec app rails db:seed
 
 - To wipe Docker clean and start from scratch, enter the command:
   `docker container stop $(docker container ls –aq) && docker system prune –af ––volumes`
+
+`docker run --link db -it postgres:9.4 psql -h db -U postgres`
 
 # JWT, Knock
 
@@ -512,6 +516,10 @@ web:  bin/start-nginx bundle exec puma -C ./config/puma.rb
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
 
 ```
+
+# Certbot - Nginx - Docker
+
+<https://medium.com/@pentacent/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71>
 
 # Old files
 

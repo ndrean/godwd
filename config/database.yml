@@ -8,9 +8,8 @@ default: &default
 
   # Rails default, used by Foreman
   # host: localhost
-
   # !!! for Docker  do ...!!!
-  host: db
+  # host: db
 
 development:
   <<: *default
@@ -19,10 +18,8 @@ production:
   <<: *default
   url: <%= ENV['DATABASE_URL'] %> # Heroku
 
-
   # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
   # url: "postgresql://postgres:postgres@localhost:5432/godwd_development"
   #
-
   #### CleverCloud
   # url: <%= ENV['POSTGRESQL_ADDON_URI'] %>

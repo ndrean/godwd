@@ -1,28 +1,25 @@
 class Api::V1::UsersController < ApplicationController
   before_action( :authenticate_user, only: [ :destroy, :profile] )
 
-  def fb_params
-    expires_in 24.hours, public: true
-    render json: {
-      "fb_id": Rails.application.credentials.fb[:fb_id],
-      "fb_secret": Rails.application.credentials.fb[:fb_secret]
-    }
-  end
-
-  def cl_params
-    expires_in 24.hours, public: true
-    render json:{
-      "CLOUD_NAME": Rails.application.credentials.CL[:CLOUD_NAME]
-      
-    }
-  end
-  #"CL_API_Secret": Rails.application.credentials.CL[:API_SECRET],
-  #"CL_API_KEY": Rails.application.credentials.CL[:API_KEY]
+  # def fb_params
+  #   expires_in 24.hours, public: true
+  #   render json: {
+  #     "fb_id": Rails.application.credentials.fb[:fb_id],
+  #     "fb_secret": Rails.application.credentials.fb[:fb_secret]
+  #   }
+  # end
+  # def cl_params
+  #   expires_in 24.hours, public: true
+  #   render json:{
+  #     "CLOUD_NAME": Rails.application.credentials.CL[:CLOUD_NAME]   
+  #   }
+  # end
 
   # endpoint check user
   def profile
     # expires_in 4.hours
     render json: current_user
+    logger.debug "..........profile found..#{current_user.email}"
   end
 
   def find_user
@@ -36,13 +33,14 @@ class Api::V1::UsersController < ApplicationController
 
   def find_create_with_fb   
     fb_user = User.find_or_create_by(uid: user_params['uid']) do |user|
+      logger.debug "..................CREATE"
       user.email = user_params['email']
-      user.password = SecureRandom.urlsafe_base64.to_s
+      user.password = SecureRandom.urlsafe_base64.to_s # fake pwd
       user.uid = user_params['uid']
       user.save
       user.access_token = Knock::AuthToken.new(payload: {sub: user.id}).token
       user.save
-    end
+      end
 
     if fb_user.confirm_token.blank? && !fb_user.confirm_email
       fb_user.confirm_token = SecureRandom.urlsafe_base64.to_s
@@ -54,6 +52,7 @@ class Api::V1::UsersController < ApplicationController
     end
 
     if fb_user.confirm_email
+      # TEST : CHANGED id => uid
       fb_user.access_token = Knock::AuthToken.new(payload: {sub: fb_user.id}).token
       logger.debug "..................Knock Authentified"
       fb_user.save
@@ -70,7 +69,6 @@ class Api::V1::UsersController < ApplicationController
   def create_user
     return render json: { status: :not_acceptable }  if !user_params[:password]
     user = User.find_by(email: user_params[:email])
-    logger.debug "..........#{user}"
     user.password = user_params[:password] if user
     user = User.create(user_params) if !user
     # if the user has no 'confirm_token', set one and send a mail with it for him to click
@@ -129,7 +127,7 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:email, :name, :password, :password_digest, :access_token, :uid)
+      params.require(:user).permit(:email, :name, :password, :password_digest, :access_token, :uid, :password_confirmation)
     end 
     
 end
