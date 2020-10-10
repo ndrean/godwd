@@ -42,19 +42,16 @@ http {
 
   
   upstream app_server {
-    server godwd-api.herokuapp.com:3001 fail_timeout=0; # version tcp/ip <=> port
+    server localhost:3001 fail_timeout=0; # version tcp/ip <=> port
  	} 
 
   server {
     listen <%= ENV['PORT']%>;  # nginx listen on the port set by Heroku
-    server_name godwd-api.herokuapp.com
+    server_name https://godwd-api.herokuapp.com
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
-    # send non-static file requests to the app server (everything since api)
-    <%# location / {    
-      try_files $uri @rails;  
-    }  %>
+    
 
     location / {   
       if ($request_method = 'OPTIONS') {

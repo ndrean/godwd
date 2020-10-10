@@ -4,10 +4,9 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "https://thedownwinder.com"
-    #'*'#'my-netlify-url', 'www.godownwind.online'
+    origins "*"
 
-    resource "https://godwd-api.herokuapp.com",
+    resource "*",
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head]
   end
