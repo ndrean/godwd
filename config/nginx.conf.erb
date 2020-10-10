@@ -45,7 +45,7 @@ http {
 
   
   upstream app_server {
-    server godwd-api.herokuapp.com:3001 fail_timeout=0; # version tcp/ip <=> port
+    server 127.0.0.1:3001 fail_timeout=0; # version tcp/ip <=> port
  	} 
 
   server {
