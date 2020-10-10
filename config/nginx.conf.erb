@@ -14,7 +14,7 @@ http {
   gzip              on;
   gzip_comp_level   6;
   gzip_min_length   512;
-  gzip_static       on;
+  #gzip_static       on;
 
   # by default nginx does not compress responses to proxied req (the 'via')
   gzip_proxied      no-cache no-store private expired auth;
@@ -25,6 +25,9 @@ http {
     "application/xml;charset=utf-8" application/xml text/xml
     "text/css;charset=utf-8" text/css
     "text/plain;charset=utf-8" text/plain;
+    "text/javascript;charset=utf-8" text/javascript;
+    "image/svg+xml;
+    "image/x-icon";
 
   server_tokens     off;
 
@@ -42,7 +45,7 @@ http {
 
   
   upstream app_server {
-    server 127.0.0.1:3001 fail_timeout=0; # version tcp/ip <=> port
+    server godwd-api.herokuapp.com:3001 fail_timeout=0; # version tcp/ip <=> port
  	} 
 
   server {
