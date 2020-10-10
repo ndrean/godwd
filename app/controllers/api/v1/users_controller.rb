@@ -35,7 +35,7 @@ class Api::V1::UsersController < ApplicationController
     fb_user = User.find_or_create_by(uid: user_params['uid']) do |user|
       logger.debug "..................CREATE"
       user.email = user_params['email']
-      user.password = SecureRandom.urlsafe_base64.to_s # fake pwd
+      user.password = SecureRandom.urlsafe_base64.to_s # set fake pwd
       user.uid = user_params['uid']
       user.save
       user.access_token = Knock::AuthToken.new(payload: {sub: user.id}).token

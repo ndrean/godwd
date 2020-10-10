@@ -7,8 +7,8 @@
         post '/getUserToken',     to: 'user_token#create'
 
         #credentials passed to front end
-        get '/fbParams',          to: 'users#fb_params'
-        get '/CLParams',          to: 'users#cl_params'
+        # get '/fbParams',          to: 'users#fb_params'
+        # get '/CLParams',          to: 'users#cl_params'
 
         resources :users, only: [ :index, :show]
         get '/profile',           to: 'users#profile'
