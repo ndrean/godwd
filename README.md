@@ -648,7 +648,7 @@ daemon off;
 http {
   [...]
   upstream app_server {
-    server server 127.0.0.1:3001 fail_timeout=0;
+    server 127.0.0.1:3001 fail_timeout=0;
  	}
 
   server {

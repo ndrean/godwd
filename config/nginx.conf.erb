@@ -42,11 +42,12 @@ http {
 
   
   upstream app_server {
-    server localhost:3001 fail_timeout=0; # version tcp/ip <=> port
+    server 127.0.0.1:3001 fail_timeout=0; # version tcp/ip <=> port
  	} 
 
   server {
     listen <%= ENV['PORT']%>;  # nginx listen on the port set by Heroku
+    server_name localhost
     <%# server_name godwd-api.herokuapp.com %>
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
