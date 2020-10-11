@@ -15,8 +15,7 @@ port        3001
 
 
 preload_app! ##
-
-# rackup      DefaultRackup ##
+rackup      DefaultRackup ##
 
 on_worker_fork { FileUtils.touch('/tmp/app-initialized') } ##
 	

@@ -41,4 +41,6 @@ COPY . .
 
 EXPOSE 3001
 # set the start command
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb", "rails", "server", "-b", "0.0.0.0"]
+# CMD bundle exec puma -c ./config/puma.rb
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"] 
+#, "rails", "server", "-b", "0.0.0.0"]

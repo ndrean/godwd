@@ -616,7 +616,7 @@ http {
 
 ## Heroku production.
 
-My app is located at `my-app.herokuapp.com` and I name-spaced my endpoints with '/api/v1'.
+My app is located at `godwd-api.herokuapp.com` and I name-spaced my endpoints with '/api/v1'.
 
 - buildpack : `$ heroku buildpacks:add heroku-community/nginx`,
 - add to `Procfile`: `web: bin/start-nginx bundle exec puma --config config/puma.rb`

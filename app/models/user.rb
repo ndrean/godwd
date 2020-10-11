@@ -9,10 +9,10 @@ class User < ApplicationRecord
     validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
 
     # modify token payload to accept uid given by Facebook
-    def to_token_payload
-        return { 
-            sub: uid,
-            email: email
-         }
-    end
+    # def to_token_payload
+    #     return { 
+    #         sub: uid,
+    #         email: email
+    #      }
+    # end
 end

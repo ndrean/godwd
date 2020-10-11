@@ -31,8 +31,7 @@ http {
   server_tokens     off;
 
   log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
-  access_log  <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
-  error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+  error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'log/nginx/error.log' %>;
 
 
   include mime.types;
@@ -53,6 +52,7 @@ http {
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
 
+    return 301 https://$host$request_uri;
 
     location / { 
        <%# 
@@ -86,7 +86,6 @@ http {
           add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
       } %>
       try_files $uri @rails;
-      break;
     }
 
     
