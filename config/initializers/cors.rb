@@ -5,7 +5,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allowed_headers = %i(get post put patch delete options head)
   allow do
-    origins "https://localhost:3000"#, "http://localhost:8080", "https://thedownwinder.com"
+    origins "*"#, "http://localhost:8080", "https://thedownwinder.com"
     resource "*",
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head]
