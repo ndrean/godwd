@@ -253,8 +253,11 @@ CORS stands for Cross-Origin Resource Sharing, a standard that lets developers s
 # /config/application.rb
 config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "*"
-    resource ‘*’, headers: :any, methods: [:get, :post, :options]
+    origins ["https://thedownwinder.com", "http://localhost:3001", "http://localhost:8080"]
+    resource ‘*’,
+      headers: :any,
+      methods: [:get, :post, :options],
+      credentials: true
   end
 end
 ```

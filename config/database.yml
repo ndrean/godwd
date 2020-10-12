@@ -9,7 +9,7 @@ default: &default
   # Rails default, used by Foreman
   # host: localhost
   # !!! for Docker  do ...!!!
-  host: db
+  # host: db
 
 development:
   <<: *default
