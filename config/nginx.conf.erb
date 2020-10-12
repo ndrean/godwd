@@ -50,8 +50,8 @@ http {
     listen <%= ENV['PORT']%>;  # nginx listen on the port set by Heroku
     <%# server_name godwd-api.herokuapp.com %>
     keepalive_timeout 5;
-    client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
-
+    # client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>;
+    client_max_body_size 50M;
     return 301 https://$host$request_uri;
 
     location / { 

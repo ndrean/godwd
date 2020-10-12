@@ -243,6 +243,7 @@ port        ENV.fetch("PORT") { 3001 }
 # Bootsnap issue
 
 <https://github.com/Shopify/bootsnap/issues/262>
+Removed line 60 ` # config.file_watcher = ActiveSupport::EventedFileUpdateChecker`in '/config/development.rb' which uses `listen`.
 
 # CORS
 
@@ -712,6 +713,10 @@ Navigate to http://localhost:8080/... and you should see 'server: nginx'
 > check nginx with `ps aux | grep nginx``
 
 mauris_tovar mariana
+
+# Cloudfare / S3
+
+<https://support.cloudflare.com/hc/en-us/articles/360037983412-Configuring-an-Amazon-Web-Services-static-site-to-use-Cloudflare>
 
 # Kill
 

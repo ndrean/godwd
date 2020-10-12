@@ -24,9 +24,9 @@ RUN gem install bundler --no-document && bundle install --no-binstubs || bundle 
 # Note: specific version can be set 'RUN gem install bundler -v 2.1.4'
 
 # Add a script to be executed every time the container starts.
-COPY entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+# COPY entrypoint.sh /usr/bin/
+# RUN chmod +x /usr/bin/entrypoint.sh
+# ENTRYPOINT ["entrypoint.sh"]
 
 # node.js
 #RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
