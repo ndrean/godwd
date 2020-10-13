@@ -43,7 +43,7 @@ Rails.application.configure do
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
 
-  config.hosts << ["app_server", "thedownwinder", "localhost:3000"]
+  config.hosts << ["app_server", "thedownwinder.com", "localhost:3000"]
   
 
   # Highlight code that triggered database queries in logs.

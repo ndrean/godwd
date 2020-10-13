@@ -40,6 +40,8 @@ services:
       - redis
       - db
     env_file: .env
+    command: bundle exec sidekiq -C config/sidekiq.yml
+
 
   app:
     build:
