@@ -1,14 +1,13 @@
 Hi <%= @user_email %>
 
-<p> Thanks for registering to <a href="<%=ENV['DOMAIN_HOST'] %>" >theDownWinder.com</a> </p>
 
-
-<p> Please click the link below to confirm registration: </p>
+<p> Thanks for registering. Please click the link below to confirm registration: </p>
 <p> **** 
     <a href= "<%= ENV['DOMAIN_NAME'] %>/mailconfirmation/?mail_token=<%= @user_confirmation_token %>" >
         Confirm my account
     </a> ****
 </p>
+<p> and navigate to <a href="<%=ENV['DOMAIN_HOST'] %>" >theDownWinder.com</a> </p>
 
 <hr>
 
