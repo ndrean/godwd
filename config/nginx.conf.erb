@@ -51,9 +51,9 @@ http {
     <%# server_name godwd-api.herokuapp.com %>
     keepalive_timeout 5;
     client_max_body_size 50M;
-    return 301 https://$host$request_uri;
+    <%# return 301 https://$host$request_uri; %>
 
-    return 301 https://$host$request_uri;
+    <%# return 301 https://$host$request_uri; %>
     # ??? redirect http://godwd-api to https://godwd-api 
 
     location / { 
