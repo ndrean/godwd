@@ -61,7 +61,7 @@ class Api::V1::UsersController < ApplicationController
 
     if !fb_user.confirm_email && fb_user.confirm_token  
       logger.debug "............Wait Mail Confirmation"
-      return render json: {status: 201}
+      return render json: fb_user, status: 201
     end
   end
 

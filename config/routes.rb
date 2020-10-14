@@ -27,6 +27,8 @@
       end
     end
 
+    mount ActionCable.server => '/cable'
+
     mount Sidekiq::Web => '/sidekiq'
     get '*path', to: 'application#routing_error'
     

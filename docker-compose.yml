@@ -30,7 +30,7 @@ services:
       dockerfile: ./docker/app/Dockerfile
     # command: "bundle exec sidekiq -C config/sidekiq.yml" => entrypoint.sh
     volumes:
-      - .:/var/www/myapp # linking outer . to inner /var/www/myapp
+      - .:/var/www/myapp:cached # linking outer . to inner /var/www/myapp
     restart: always
     environment:
       - RAILS_ENV=$RAILS_ENV
@@ -50,7 +50,7 @@ services:
       args:
         RAILS_ENV: $RAILS_ENV
     volumes:
-      - .:/var/www/myapp
+      - .:/var/www/myapp:cached
     # linking inner folder /var/www/myapp to the Root . of the app
     restart: always
     depends_on:
@@ -73,7 +73,7 @@ services:
       args:
         RAILS_ENV: "development"
     volumes:
-      - .:/var/www/myapp # linking inner to outer
+      - .:/var/www/myapp :cached # linking inner to outer
     restart: always
     ports:
       - 8000:80 # linking inner port 80 to outer port 8000

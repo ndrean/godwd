@@ -23,6 +23,7 @@ gem 'sidekiq-failures', '~> 1.0'
 
 # Use Redis adapter for Sidekiq
 gem 'redis', '~> 4.0'
+gem 'hiredis'
 
 # Use Active Model has_secure_password
 gem 'bcrypt', '~> 3.1.7'

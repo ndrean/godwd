@@ -53,6 +53,9 @@ http {
     client_max_body_size 50M;
     <%# return 301 https://$host$request_uri; %>
 
+    return 301 https://$host$request_uri;
+    # ??? redirect http://godwd-api to https://godwd-api 
+
     location / { 
       try_files $uri @rails;
     }
