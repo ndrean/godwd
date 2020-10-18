@@ -4,13 +4,21 @@ Rails.application.configure do
   # Ensure mailer works in development. Firstly 'letter_opener', then 'smtp' (real mails)
   config.action_mailer.delivery_method = :smtp # letter_opener
   # config.action_mailer.default_url_options = { host: 'http://godownwind.online'}
-  routes.default_url_options[:host] = 'http://localhost:3001'
+  routes.default_url_options[:host] = 'http://localhost:8080'
   # SMTP CONFIG IN '/initializers/smtp.rb
   
   config.cache_classes = false
 
   # Do not eager load code on boot.
-  config.eager_load = false
+  config.eager_load = true
+
+  config.allow_concurrency = true
+
+  ##### ActionCable ###########
+  # config.action_cable.allowed_request_origins = ["https://localhost:3001", "https://godwd-api.herokuapp.com"]
+  # config.action_cable.url = "ws://localhost:3001/cable"
+  # config.action_cable.disable_request_forgery_protection = true
+  #############################
 
   # Show full error reports.
   config.consider_all_requests_local = true

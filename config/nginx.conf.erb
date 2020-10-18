@@ -51,10 +51,6 @@ http {
     <%# server_name godwd-api.herokuapp.com %>
     keepalive_timeout 5;
     client_max_body_size 50M;
-    <%# return 301 https://$host$request_uri; %>
-
-    <%# return 301 https://$host$request_uri; %>
-    # ??? redirect http://godwd-api to https://godwd-api 
 
     location / { 
       try_files $uri @rails;
@@ -68,6 +64,13 @@ http {
       proxy_redirect off;    
       proxy_pass http://app_server;  
    }
+
+    <%# location /cable {
+      proxy_pass http://app_server;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+    } %>
 
     location /favicon.ico {
       log_not_found off;

@@ -27,6 +27,7 @@ on_worker_fork { FileUtils.touch('/tmp/app-initialized') } ##
 # option, you will want to use this block to reconnect to any threads
 # or connections that may have been created at application boot, as Ruby
 # cannot share connections between processes.
+
 on_worker_boot { ActiveRecord::Base.establish_connection }
     
 

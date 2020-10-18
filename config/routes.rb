@@ -22,12 +22,16 @@
         get 'confirmDemand',      to: 'events#confirm_demand'
         
         get 'itinaries',          to: 'itinaries#index'
-          
 
+        ### TEST SSE (SERVER SENT EVENT)
+        get 'sse/updateEvt',      to: 'sse_events#update_events'
+        get 'sse/deleteEvent',         to: 'sse_events#delete_event'
+        get 'sse/redisDeleteEvent',    to: 'sse_events#redis_delete_event' 
       end
     end
 
-    mount ActionCable.server => '/cable'
+    # mount ActionCable.server => '/cable'
+    
 
     mount Sidekiq::Web => '/sidekiq'
     get '*path', to: 'application#routing_error'

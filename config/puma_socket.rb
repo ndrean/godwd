@@ -11,6 +11,7 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 app_dir =  File.expand_path("../..", __FILE__)
 pidfile     ENV.fetch("PIDFILE") { "#{app_dir}/tmp/pids/server.pid" }
 
+daemonize true  #############
 preload_app!
 rackup      DefaultRackup
 
