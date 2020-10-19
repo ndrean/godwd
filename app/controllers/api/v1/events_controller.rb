@@ -114,7 +114,7 @@ class Api::V1::EventsController < ApplicationController
     event = Event.find(params[:id])
     logger.debug ".............•#{event.id}"
     Event.set_id(params[:id])
-    Event.publish_delete(event.id)
+    # Event.publish_delete(event.id)
 
     return render json: { status: 401 } if event.user != current_user
     # Sidekiq (not ActiveJob) for Cloudinary: perform_async in ctrl => perform in worker
@@ -138,8 +138,7 @@ class Api::V1::EventsController < ApplicationController
   end
 
   
-  # POST '/api/v1/pushDemand'
-  # send mail to owner of an event for user to join
+  # POST '/api/v1/pushDemand', send mail to owner of an event for user to join
   def receive_demand
     token = SecureRandom.urlsafe_base64.to_s
     event = Event.find(params[:event][:id])
@@ -155,8 +154,7 @@ class Api::V1::EventsController < ApplicationController
   end
 
   
-  # GET 'api/v1/confirmDemand/?name=XXX?user=YYY?ptoken=ZZZ'
-  # token sent from link in mail for owner to accept user
+  # GET 'api/v1/confirmDemand/?name=XXX?user=YYY?ptoken=ZZZ', token sent from link in mail for owner to accept user
   def confirm_demand
     owner = params[:name]
     itinary = Itinary.find(params[:itinary])

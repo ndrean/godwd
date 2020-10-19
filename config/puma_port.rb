@@ -15,10 +15,10 @@ pidfile     ENV.fetch("PIDFILE") { "#{app_dir}/tmp/pids/server.pid" }
 
 preload_app!
 rackup      DefaultRackup
-
-# on_worker_fork { FileUtils.touch('/tmp/app-initialized') } 
-
-# on_worker_boot { ActiveRecord::Base.establish_connection }
+##
+on_worker_fork { FileUtils.touch('/tmp/app-initialized') } 
+##
+on_worker_boot { ActiveRecord::Base.establish_connection }
 
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
