@@ -25,7 +25,7 @@ class Api::V1::SseEventsController < ActionController::Base
       sse = SSE.new(response.stream, retry: 1000, event: "delEvt") 
       if Event.deleted_id
         logger.debug "..........Class: #{Event.deleted_id}"
-        sse.write({id: Event.deleted_id}.to_json)
+        sse.write( {id: Event.deleted_id}.to_json)
       end
     rescue IOError
     ensure

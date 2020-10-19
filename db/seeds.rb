@@ -4,7 +4,7 @@ Itinary.destroy_all
 User.destroy_all
 
 puts "creating..."
-User.create!(email:"nevendrean@gmail.com", password: "password", confirm_email: "true")
+User.create!(email:"surfer@test.fr", password: "password", confirm_email: "true")
 User.create!(email:"kiter@test.fr",  password:"password", confirm_email: "true")
 # User.create!(email: "nevendrean@yahoo.fr", password:"password")
 
