@@ -12,7 +12,7 @@ class Event < ApplicationRecord
   }
 
   def self.publish_delete(id)
-    redis = Redis.new(ENV.fetch('REDIS_URL')) #url: ENV.fetch("REDIS_URL"))
+    redis = Redis.new(url: ENV.fetch('REDIS_URL')) #url: ENV.fetch("REDIS_URL"))
     redis.publish("delete_event", {id: id}.to_json)
   end
 

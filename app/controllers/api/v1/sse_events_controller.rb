@@ -37,7 +37,7 @@ class Api::V1::SseEventsController < ActionController::Base
     begin
       response.headers['Content-Type'] = 'text/event-stream'
       sse = SSE.new(response.stream, retry: 5000, event: 'delete_event')
-      redis = Redis.new(ENV.fetch('REDIS_URL')) #url: ENV.fetch("REDIS_URL"))
+      redis = Redis.new(url: ENV.fetch('REDIS_URL')) #url: ENV.fetch("REDIS_URL"))
       logger.debug "..............#{redis.ping}"
       # ticker = Thread.new { loop { sse.write 0; sleep 5 } }
       # sender = Thread.new do
