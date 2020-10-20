@@ -23,10 +23,10 @@
         
         get 'itinaries',          to: 'itinaries#index'
 
-        ### TEST SSE (SERVER SENT EVENT)
-        get 'sse/updateEvt',      to: 'sse_events#update_events'
-        get 'sse/deleteEvent',         to: 'sse_events#delete_event'
-        get 'sse/redisDeleteEvent',    to: 'sse_events#redis_delete_event' 
+        ### SERVER SENT EVENT)
+        get 'sse/updateEvt',        to: 'sse_events#update_events'
+        get 'sse/deleteEvent',      to: 'sse_events#delete_event'
+        get 'sse/redisDeleteEvent', to: 'sse_events#redis_delete_event' 
       end
     end
 

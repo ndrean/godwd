@@ -42,6 +42,7 @@ class Api::V1::EventsController < ApplicationController
   def create   
     event = Event.new(event_params)
     event.user = current_user
+
     if !event.save
       return render json: event.errors.full_messages, status: :unprocessable_entity
     end
@@ -112,9 +113,8 @@ class Api::V1::EventsController < ApplicationController
   # DELETE '/api/v1/events/:id'
   def destroy
     event = Event.find(params[:id])
-    logger.debug ".............•#{event.id}"
     Event.set_id(params[:id])
-    # Event.publish_delete(event.id)
+    Event.publish_delete(event.id)
 
     return render json: { status: 401 } if event.user != current_user
     # Sidekiq (not ActiveJob) for Cloudinary: perform_async in ctrl => perform in worker
