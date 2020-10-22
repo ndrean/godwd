@@ -32,7 +32,7 @@ module Godwd
     # config.middleware.use Rack::Deflater
     # config.middleware.use Rack::Brotli
 
-    config.active_record.schema_format :ruby
+    config.active_record.schema_format :sql
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
