@@ -47,7 +47,7 @@ The front end is:
 
 - uses a Facebook Login component
 
-  ![FBLogin](https://github.com/ndrean/godwd/blob/master/public/FB_Login.png)
+  ![FBLogin](https://github.com/ndrean/godwd/blob/master/public/FB-Login.png)
 
 - uses mapping with Leaflet.js and the arcGis service for reverse geolocation
 
