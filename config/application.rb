@@ -27,7 +27,7 @@ module Godwd
     config.load_defaults 6.0
     # config.autoloader= :classic # to disable zeitwerk
 
-    # COMPRESSION
+    # COMPRESSION: done with nginx
     # config.middleware.insert_after ActionDispatch::Static, Rack::Brotli
     # config.middleware.use Rack::Deflater
     # config.middleware.use Rack::Brotli

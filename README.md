@@ -24,6 +24,8 @@ The app is served from Heroku (free dyno...)
 
   ![Postgres](https://github.com/ndrean/godwd/blob/master/public/Postgres.png)
 
+  - changes in the database are live streamed with Server-Sent-Events
+
 - uses Sidekiq with Redis as the ActiveJob adapter for mailing
 
   ![Sidekiq](https://github.com/ndrean/godwd/blob/master/public/sidekiq.png)
