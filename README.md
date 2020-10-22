@@ -13,22 +13,28 @@ You can run `docker-compose up` and navigate to `localhost:8080/api/v1/events`: 
   ![nginx](https://github.com/ndrean/godwd/blob/master/public/nginx.png)
 
 so that we have the following schema:
+
 ![Nginx Puma Rack Rails](https://github.com/ndrean/godwd/blob/master/public/Nginx-puma-rack-rails.png)
 
 The app is served from Heroku (free dyno...)
+
 ![Heroku](https://github.com/ndrean/godwd/blob/master/public/Heroku.png)
 
 - uses a PostgreSQL database
+
   ![Postgres](https://github.com/ndrean/godwd/blob/master/public/Postgres.png)
 
 - uses Sidekiq with Redis as the ActiveJob adapter for mailing
+
   ![Sidekiq](https://github.com/ndrean/godwd/blob/master/public/sidekiq.png)
   ![Redis](https://github.com/ndrean/godwd/blob/master/public/Redis.png)
 
 - Mailgun for the mialing service
+
   ![Mailgun](https://github.com/ndrean/godwd/blob/master/public/mailgun.png)
 
 - Cloudinary (without ActiveStorage) for storing images. The upload is done directly to Cloudinary by the front end. The front end sends the url of the image, and the back end saves it. The back end only deletes the image async with a Sidekiq worker.
+
   ![Cloudinary](https://github.com/ndrean/godwd/blob/master/public/Cloudinary.png)
 
 The authnetification uses the gem Knock (with BCrypt and JWT).
@@ -36,16 +42,21 @@ The authnetification uses the gem Knock (with BCrypt and JWT).
 The front end is:
 
 - a React fromt end (using Create-React-app)
+
   ![React](https://github.com/ndrean/godwd/blob/master/public/React.png)
 
 - uses a Facebook Login component
+
   ![FBLogin](https://github.com/ndrean/godwd/blob/master/public/FB_Login.png)
 
 - uses mapping with Leaflet.js and the arcGis service for reverse geolocation
+
   ![Leaflet.js](https://github.com/ndrean/godwd/blob/master/public/leafletjs.png)
+
   ![arcGis](https://github.com/ndrean/godwd/blob/master/public/arcGis.png)
 
 The domain-registrar has been set with AWS Route53, and the static front end files are hosted in a AWS S3 bucket: create a bucket, upload code, make it public, set public access policy, configure it as web hosting, set DNS CNAME
+
 ![AWS-S3](https://github.com/ndrean/godwd/blob/master/public/AWS-S3.png)
 
 and we use a CDN: Cloudfare that provides the SSL certificates. To make the Cloudfare subdomain work with S3, you add the domain to Cloudfare, and the domain-registrar DNS servers for the Cloudflare, and DNS records accordingly. Then we have:
