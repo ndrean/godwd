@@ -11,9 +11,12 @@ class Event < ApplicationRecord
     .first
   }
 
-  # def self.publish_delete(id)
-  #   redis = Redis.new(url: ENV.fetch('REDIS_URL')) #url: ENV.fetch("REDIS_URL"))
-  #   redis.publish("delete_event", {id: id}.to_json)
+  # def self.publish_delete(channel, id)
+    # connection =  ActiveRecord::Base.connection
+    # connection.execute("LISTEN C#{channel}")
+
+    # redis = Redis.new(url: ENV.fetch('REDIS_URL')) #url: ENV.fetch("REDIS_URL"))
+    # redis.publish("delete_event", {id: id}.to_json)
   # end
 
   def self.set_id(id)

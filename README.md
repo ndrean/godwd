@@ -6,6 +6,8 @@ You can run `docker-compose up` and navigate to `localhost:8080/api/v1/events`: 
 
 # The app:
 
+A Rails API live broadcasting changes in a PSQL db, sending background mails.
+
 - back-end code is written with Ruby-On-Rails
   ![Ruby-On_Rails](https://github.com/ndrean/godwd/blob/master/public/Rails.png)
 
@@ -24,7 +26,7 @@ The app is served from Heroku (free dyno...)
 
   ![Postgres](https://github.com/ndrean/godwd/blob/master/public/Postgres.png)
 
-  - changes in the database are live streamed with Server-Sent-Events
+  - changes in the database are live streamed with **Server-Sent-Events**
 
 - uses Sidekiq with Redis as the ActiveJob adapter for mailing
 
@@ -39,7 +41,9 @@ The app is served from Heroku (free dyno...)
 
   ![Cloudinary](https://github.com/ndrean/godwd/blob/master/public/Cloudinary.png)
 
-The authnetification uses the gem Knock (with BCrypt and JWT).
+- the data sent from the server can be gzip or brotli compressed. Here we chosed to let nginx take care of this.
+
+- The authentification uses the gem **Knock** (with BCrypt and JWT).
 
 The front end is:
 
