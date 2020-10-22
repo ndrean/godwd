@@ -45,10 +45,11 @@ The front end is:
   ![Leaflet.js](https://github.com/ndrean/godwd/blob/master/public/leafletjs.png)
   ![arcGis](https://github.com/ndrean/godwd/blob/master/public/arcGis.png)
 
-The domain has been set with AWS Route53, and the static front end files are stored in a AWS S3 bucket
+The domain-registrar has been set with AWS Route53, and the static front end files are hosted in a AWS S3 bucket: create a bucket, upload code, make it public, set public access policy, configure it as web hosting, set DNS CNAME
 ![AWS-S3](https://github.com/ndrean/godwd/blob/master/public/AWS-S3.png)
 
-and we use a CDN: Cloudfare that provides the SSL certificates
+and we use a CDN: Cloudfare that provides the SSL certificates. To make the Cloudfare subdomain work with S3, you add the domain to Cloudfare, and the domain-registrar DNS servers for the Cloudflare, and DNS records accordingly. Then we have:
+
 ![Cloudfare](https://github.com/ndrean/godwd/blob/master/public/Cloudfare.png)
 
 # Database structure
