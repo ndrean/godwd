@@ -132,7 +132,7 @@ ALTER TABLE "users" ADD CONSTRAINT "fk_rails_events_users" FOREIGN KEY ("id") RE
 
 ```ruby
 # /config/application.rb
-config.active_record.schema_format :ruby
+config.active_record.schema_format :ruby # :sql
 ```
 
 so we can do `rails db:schema.load` instead of running all the migrations with `rails db:migrate`.
@@ -145,19 +145,30 @@ docker-compose exec web rails db:schema:load
 docker-compose exec web rails db:seed
 ```
 
+# TODO :
+
+- Test implement Request Rate Limiter ? (throttling on login? on 'new event')
+
+> gem `rack-attack`
+
+- try SSE with Redis publis/subscribe...(can't make it work...)
+
+- try SSE with Postgres LISTEN/NOTIFIY ?? => capture the delete action ?
+
 # HTTP Caching w/Rails
 
-`api:rails: ConditionalGet`
-This is a Rails API so only `if stale` is possible. -`if stale?` renders 'Completed 304 Not Modified in 33ms' or querries again when necessary.
+> `api:rails: ConditionalGet`
+> This is a Rails API so only `if stale` is possible. -`if stale?` renders 'Completed 304 Not Modified in 33ms' or queries again when necessary.
 
 Read:
+<https://engineering.shopify.com/blogs/engineering/write-fast-code-ruby-rails>
 
 <https://thoughtbot.com/blog/take-control-of-your-http-caching-in-rails>
 
 <https://www.synbioz.com/blog/tech/du-cache-http-avec-les-etag-en-rails>
 <https://blog.bigbinary.com/2016/03/08/rails-5-switches-from-strong-etags-to-weak-tags.html?utm_source=rubyweekly&utm_medium=email>
 
-Other HTTP caching iwth Rails (non API):
+Other HTTP caching with Rails (non API):
 
 - if request is `fresh_when(@variable)` Etag will render 304 Not modified response
 
@@ -166,7 +177,7 @@ Other HTTP caching iwth Rails (non API):
 
   <https://devcenter.heroku.com/articles/http-caching-ruby-rails#conditional-cache-headers>
 
-# VPS for Rails
+# Note: VPS for Rails
 
 <https://mydigital-life.online/comment-installer-rails-sur-un-vps/>
 
@@ -320,6 +331,8 @@ config.middleware.insert_before 0, Rack::Cors do
 end
 ```
 
+# SSE
+
 # Sidekiq, Redis setup
 
 <https://manuelvanrijn.nl/sidekiq-heroku-redis-calc/>
@@ -389,7 +402,7 @@ The `DATABASE_URL` wil be set by Heroku.
 
 # Compression
 
-We use directly gzip or Brotli compression with Rails. For Brotli, use the gem `rack-brotli` and set:
+We can use directly gzip or Brotli compression with Rails. For Brotli, use the gem `rack-brotli` and set:
 
 ```ruby
 #/config.application.rb
@@ -783,9 +796,11 @@ mauris_tovar mariana
 
 # Cloudfare / S3
 
+<https://www.blog.duomly.com/aws-course-lesson-1-how-to-host-website-on-s3-with-cloudflare/>
+
 <https://support.cloudflare.com/hc/en-us/articles/360037983412-Configuring-an-Amazon-Web-Services-static-site-to-use-Cloudflare>
 
-# Kill
+# Kill Rails
 
 '<PID>' = `lsof -i :5432` to see how is running at 5432, then `kill -9 <PID>`, or `kill -9 $(lsof -i :5432)`.
 
