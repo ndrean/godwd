@@ -179,13 +179,15 @@ Other HTTP caching with Rails (non API):
 
 # Note: VPS for Rails
 
+To be tested.
+
 <https://mydigital-life.online/comment-installer-rails-sur-un-vps/>
 
 # Async jobs:
 
 - `ActiveJob`. Set `config.active_job.queue_adapter = :sidekiq` in `/config/environments/dev-prod.rb`, and use `perform_later` or `deliver_later`. We alos need to declare a class inheriting from `ApplicationJob`and defined `queure_as :mailer` for example. <https://github.com/mperham/sidekiq/wiki/Active+Job>
 
-- or directly `Sidekiq`: example with RemoveDirectLink. Create a worker under `/app/workers/my_worker.rb` with `include Sidekiq::Worker` and use `perform_async` in the controller).
+- or directly `Sidekiq worker`: example with RemoveDirectLink. Create a worker under `/app/workers/my_worker.rb` with `include Sidekiq::Worker` and use `perform_async` in the controller).
 
 ## Sidekiq setup
 
@@ -216,15 +218,15 @@ This will be a separate process for the process launcher `Foreman`:
 worker: bundle exec sidekiq -C ./config/sidekiq.yml
 ```
 
-# Mail background jobs
+## Mail background jobs
 
-- gem 'mailgun-ruby` is usefull to get the info that a mail has been sent.
+- Note: gem 'mailgun-ruby` is usefull to get the info that a mail has been sent.
   <https://github.com/mailgun/mailgun-ruby>
 
 We declare in '/config/application.rb' (for all environments):
 `config.action_mailer.delivery_method = :smtp`
 
-We don't use ActiveJob here to sedn async a mail, we use ActionMailer with Sidekiq and the method `deliver_later` <https://github.com/mperham/sidekiq/wiki/Active-Job>. We define a class (`EventMailer` and `UserMailer`, both inheriting from `ApplicationMailer`) with actions that will be used by the controller. Each method uses a `html.erb` view to be delivered via the mail protocole `smtp`. The views use the instance variables defined in the actions.
+We don't use ActiveJob here to send async a mail, we use ActionMailer with Sidekiq and the method `deliver_later` <https://github.com/mperham/sidekiq/wiki/Active-Job>. We define a class (`EventMailer` and `UserMailer`, both inheriting from `ApplicationMailer`) with actions that will be used by the controller. Each method uses a `html.erb` view to be delivered via the mail protocole `smtp`. The views use the instance variables defined in the actions.
 
 The mails are queued in a queue named `mailers` and Sidekiq uses a Redis db.
 

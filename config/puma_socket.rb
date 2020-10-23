@@ -1,8 +1,8 @@
 require 'fileutils'
 
-workers     Integer(ENV['WEB_CONCURRENCY'] || 0)
+workers     Integer(ENV['WEB_CONCURRENCY'] || 1)
 
-threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
+threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 10)
 threads threads_count, threads_count
 
 
@@ -11,7 +11,7 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 app_dir =  File.expand_path("../..", __FILE__)
 pidfile     ENV.fetch("PIDFILE") { "#{app_dir}/tmp/pids/server.pid" }
 
-daemonize true  #############
+# daemonize true  #############
 preload_app!
 rackup      DefaultRackup
 
