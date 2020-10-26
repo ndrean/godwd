@@ -1,0 +1,5 @@
+web: bundler exec iodine -p 3001 -t 16 -w 4
+worker: bundle exec sidekiq -C config/sidekiq.yml
+redis: redis-server --port 6379 
+
+# run 'brew services start redis', no error when ctrl-c will occur

@@ -12,10 +12,14 @@ gem 'pg', '>= 0.18', '< 2.0'
 
 # Use Puma as the app server
 gem 'puma', '~> 4.1'
+# gem 'iodine', '~>0.7'
 
 gem 'rack-brotli'
 
-# gem 'fast_jsonapi'
+# gem "rack-timeout"
+
+
+
 
 # Use Sidekiq for background processing
 gem 'sidekiq'

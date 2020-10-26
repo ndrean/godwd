@@ -113,8 +113,9 @@ class Api::V1::EventsController < ApplicationController
   # DELETE '/api/v1/events/:id'
   def destroy
     event = Event.find(params[:id])
-    Event.set_id(params[:id])
-    # Event.publish_delete(event.id)
+    Event.set_id(params[:id]) # set class variable
+
+    # Event.publish_delete(event.id) # set Redis publish
 
     return render json: { status: 401 } if event.user != current_user
     # Sidekiq (not ActiveJob) for Cloudinary: perform_async in ctrl => perform in worker
@@ -123,15 +124,6 @@ class Api::V1::EventsController < ApplicationController
     # event.destroy Redondant
 
     ### V ALL
-    # upcoming_itinaries = Itinary.where('date >?', Date.today-1)
-    # events =   Event.includes(:user, :itinary).where(itinary: [upcoming_itinaries])
-    # .to_json( include: [ 
-    #     user: {only: [:email]},
-    #     itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
-    #     ]
-    # )
-    # render json: events, status: 200
-    ###
 
     ### V ONE 
     return render json: {status: 200}

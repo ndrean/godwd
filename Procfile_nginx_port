@@ -2,4 +2,4 @@
 
 web: bundle exec puma --config config/puma_port.rb
 worker: bundle exec sidekiq -C config/sidekiq.yml
-
+#redis: redis-server --port 6379

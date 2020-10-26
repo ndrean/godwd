@@ -26,6 +26,8 @@
         ### SERVER SENT EVENT)
         get 'sse/updateEvt',        to: 'sse_events#update_events'
         get 'sse/deleteEvent',      to: 'sse_events#delete_event'
+        get 'sse/change',           to: 'sse_events#change'
+        # get 'sse/psqlDeleteEvent',  to: 'sse_events#psql_delete_event'
         # get 'sse/redisDeleteEvent', to: 'sse_events#redis_delete_event' 
       end
     end

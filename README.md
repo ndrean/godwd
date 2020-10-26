@@ -1,6 +1,6 @@
 # The app:
 
-A Rails API live broadcasting changes in a PSQL db, sending background mails.
+We have the back end here: a Rails API with JWT authentification with live broadcasting PSQL db changes with SSE, and sending background mails.
 
 - back-end code is written with `Ruby-On-Rails`
 

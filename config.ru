@@ -3,5 +3,7 @@ require 'rack'
 #require 'rack/brotli'
 require_relative 'config/environment'
 
-# use Rack::Brotli
+# The Rack DSL used to run the application
+# run APP
+
 run Rails.application
