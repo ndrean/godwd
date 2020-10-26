@@ -25,18 +25,7 @@ class Api::V1::SseEventsController < ActionController::Base
     begin
       response.headers['Content-Type'] = 'text/event-stream'
       sse = SSE.new(response.stream, retry: 1000, event: "delEvt")
-      
-      begin
-        Event.on_event_delete do |id|
-          logger.debug "...........ID:..#{id}"
-        end
-      rescue ClientDisconnected
-      end
-
-      if Event.deleted_id
-        logger.debug "..........Class: #{Event.deleted_id}"
-        sse.write( {id: Event.deleted_id}.to_json)
-      end
+      sse.write( {id: Event.deleted_id}.to_json) if Event.deleted_id
     rescue IOError
     ensure
       sse.close
