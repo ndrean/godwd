@@ -27,10 +27,10 @@ module Godwd
     config.load_defaults 6.0
     # config.autoloader= :classic # to disable zeitwerk
 
-    # COMPRESSION: done with nginx
-    # config.middleware.insert_after ActionDispatch::Static, Rack::Brotli
-    # config.middleware.use Rack::Deflater
-    # config.middleware.use Rack::Brotli
+    # COMPRESSION: done with nginx or not!!
+    config.middleware.insert_after ActionDispatch::Static, Rack::Brotli
+    config.middleware.use Rack::Deflater
+    config.middleware.use Rack::Brotli
 
     config.active_record.schema_format :sql
     # Settings in config/environments/* take precedence over those specified here.
@@ -38,7 +38,15 @@ module Godwd
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
-    
+    # Actioncable
+    config.action_cable.disable_request_forgery_protection = true
+    config.action_cable.allowed_request_origins = ["https://localhost:3001", "https://godwd-api.herokuapp.com"]
+
+    # config.action_cable.url = "/cable"
+    config.action_cable.url = "ws://localhost:3001/cable"
+
+
+
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter
     config.log_tags  = [:subdomain, :uuid]

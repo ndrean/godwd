@@ -3,9 +3,11 @@ class Event < ApplicationRecord
   belongs_to :itinary
   accepts_nested_attributes_for :itinary
   
-  # before_commit :notify_delete, on: :destroy
+  before_commit :notify_delete, on: :destroy
+  # after_commit :publish_update, on: [:create, :update]
 
   cattr_accessor :deleted_id
+  cattr_accessor :updated_event
 
   scope :last_updated, -> {
     joins(:user,:itinary)
@@ -13,17 +15,39 @@ class Event < ApplicationRecord
     .first
   }
 
-  # def self.publish_delete(channel, id)
-    # connection =  ActiveRecord::Base.connection
-    # connection.execute("LISTEN C#{channel}")
-
-    # redis = Redis.new(url: ENV.fetch('REDIS_URL')) #url: ENV.fetch("REDIS_URL"))
-    # redis.publish("delete_event", {id: id}.to_json)
-  # end
-
   def self.set_id(id)
     Event.deleted_id = id
+    # ActionCable.server.broadcast( "delEvt", {id: id}.as_json) ###################
   end
+
+  def notify_delete
+    Event.deleted_id = self.id
+  end
+
+  # def publish_update
+  #   Event.updated_event = self
+  # end
+
+  # def recently_changed?(event)
+  #   event.created_at > 5.seconds.ago or
+  #     event.updated_at > 5.seconds.ago
+  # end
+
+  # def publish_update
+  #   last_updated_event = Event.last_updated  # scope
+  #   if recently_changed?(last_updated_event)
+  #     ActionCable.server.broadcast(last_update_event.as_json( include: [ 
+  #           user: {only: [:email]},
+  #           itinary: {only: [:date, :start, :end, :distance, :start_gps, :end_gps ]}
+  #           ]
+  #       )
+  #     ) 
+  #   end
+  # end
+  ############################
+
+
+  
 
   # def self.clean_sql(query)
   #   sanitize_sql(query)
